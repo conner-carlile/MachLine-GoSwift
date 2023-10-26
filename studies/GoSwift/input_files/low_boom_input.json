@@ -1,0 +1,31 @@
+{
+    "flow": {
+        "freestream_velocity": [100.0, 0.0, 0.0],
+        "freestream_mach_number": 2
+    },
+    "geometry": {
+        "file": "studies/GoSwift/meshes/low_boom.stl",
+        "spanwise_axis" : "+y",
+        "wake_model": {
+            "wake_present" : false
+        },
+        "reference": {
+            "area": 1.0
+        }
+    },
+    "solver": {
+        "formulation": "dirichlet-morino",
+        "control_point_offset": 1.1e-05
+    },
+    "post_processing" : {
+    },
+    "output": {
+        "body_file" : "studies/GoSwift/results/low_boom.vtk",
+        "wake_file" : "studies/GoSwift/results/low_boom_wake.vtk",
+        "offbody_points" : {
+            "points_file" : "studies/Goswift/off_body/off_body.csv",
+            "output_file" : "studies/Goswift/results/off_body_sample.csv"
+        }
+        
+    }
+}

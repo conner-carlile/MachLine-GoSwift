@@ -1,7 +1,7 @@
 {
     "flow": {
         "freestream_velocity" : [ 100.0, 0.0, 0.0 ],
-        "freestream_mach_number" : 1.62
+        "freestream_mach_number" : 1.6
     },
     "geometry": {
         "file": "dev/meshes/Rough_mesh_53_30_Delta_Wing.tri",

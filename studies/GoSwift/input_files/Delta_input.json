@@ -1,0 +1,27 @@
+{
+    "flow": {
+        "freestream_velocity": [90.0, 10.0, 0.0],
+        "freestream_mach_number": 0
+    },
+    "geometry": {
+        "file": "studies/GoSwift/meshes/F15new.stl",
+        "spanwise_axis" : "+y",
+        "wake_model": {
+            "wake_present" : false
+        },
+        "reference": {
+            "area": 3.0
+        }
+    },
+    "solver": {
+        "formulation": "neumann-mass-flux",
+        "control_point_offset": 1.1e-05
+    },
+    "post_processing" : {
+    },
+    "output": {
+        "body_file" : "studies/GoSwift/results/F15s_(GS).vtk",
+        "wake_file" : "studies/GoSwift/results/F15s_(GS)_wake.vtk"
+        
+    }
+}

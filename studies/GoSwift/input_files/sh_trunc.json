@@ -1,0 +1,39 @@
+{
+    "flow": {
+        "freestream_velocity": [-100, 0.0, 0.0],
+        "gamma": 1.4,
+        "freestream_mach_number": 2
+    },
+    "geometry": {
+        "file": "studies/GoSwift/meshes/SH_half.stl",
+        "spanwise_axis": "+y",
+        "wake_model": {
+            "wake_present": false
+        },
+        "reference": {
+            "area": 0.001675
+        }
+    },
+
+    "solver": {
+
+        "formulation": "dirichlet-morino",
+        "run_checks": true,
+        "control_point_offset": 1.1e-08
+
+    },
+    "post_processing": {
+        "pressure_rules":{
+            "incompressible": false,
+            "isentropic": true
+        }
+    },
+    "output": {
+        "body_file": "studies/GoSwift/results/SH_half.vtk",
+        "report_file": "studies/Goswift/results/SH_half.json",
+        "offbody_points" : {
+            "points_file" : "studies/Goswift/off_body/off_body.csv",
+            "output_file" : "studies/Goswift/results/off_body_sample.csv"
+        }
+    }
+}

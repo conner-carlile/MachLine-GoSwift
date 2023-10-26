@@ -5,7 +5,6 @@
             0.0,
             0.0
         ],
-        "gamma": 1.4,
         "freestream_mach_number": 2
     },
     "geometry": {
@@ -17,8 +16,8 @@
         }
     },
     "solver": {
-        "formulation" : "morino",
-        "matrix_solver" : "FQRUP"
+        "formulation" : "dirichlet-morino",
+        "matrix_solver" : "GMRES"
     },
     "post_processing": {
     },
