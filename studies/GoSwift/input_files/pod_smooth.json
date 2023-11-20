@@ -5,7 +5,7 @@
         "freestream_mach_number": 1.5
     },
     "geometry": {
-        "file": "studies/GoSwift/meshes/100_30_SH.stl",
+        "file": "studies/GoSwift/meshes/pod_smooth.stl",
         "spanwise_axis": "+y",
         "wake_model": {
             "wake_present": false
@@ -19,7 +19,7 @@
 
         "formulation": "dirichlet-morino",
         "run_checks": true,
-        "control_point_offset": 1.1e-08
+        "control_point_offset": 1.1e-8
 
     },
     "post_processing": {
@@ -29,8 +29,8 @@
         }
     },
     "output": {
-        "body_file": "studies/GoSwift/100_30_SH.vtk",
-        "report_file": "studies/Goswift/results/100_30_SH.json",
+        "body_file": "studies/GoSwift/results/pod_smooth.vtk",
+        "report_file": "studies/Goswift/results/pod_smooth.json",
         "offbody_points" : {
             "points_file" : "studies/Goswift/off_body/off_body.csv",
             "output_file" : "studies/Goswift/results/off_body_sample.csv"

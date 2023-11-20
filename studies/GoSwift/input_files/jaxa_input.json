@@ -1,23 +1,23 @@
 {
     "flow": {
-        "freestream_velocity": [1452.12, 0.0, 0.0],
+        "freestream_velocity": [442.605, 0.0, 0.0],
         "gamma": 1.4,
         "freestream_mach_number": 1.5
     },
     "geometry": {
-        "file": "studies/GoSwift/meshes/jaxxxa.stl",
+        "file": "studies/GoSwift/meshes/JWB_0AOA.stl",
         "spanwise_axis": "+y",
         "wake_model": {
             "wake_present": false
         },
         "reference": {
-            "area": 1.0
+            "area": 6287938.2
         }
     },
 
     "solver": {
 
-        "formulation": "dirichlet-morino",
+        "formulation": "dirichlet-source-free",
         "run_checks": true,
         "control_point_offset": 1.1e-08
 
@@ -29,7 +29,7 @@
         }
     },
     "output": {
-        "body_file": "studies/GoSwift/results/jaxxxa.vtk",
+        "body_file": "studies/GoSwift/results/JWB_0AOA.vtk",
         "offbody_points" : {
             "points_file" : "studies/Goswift/off_body/off_body.csv",
             "output_file" : "studies/Goswift/results/off_body_sample.csv"
