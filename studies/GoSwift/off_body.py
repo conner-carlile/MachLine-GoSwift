@@ -142,7 +142,7 @@ def pressures(speed_of_sound, p_static):
         rows = csv.DictReader(file)
         for row in rows:   
             M = abs(float(row['V'])/c)
-            print(M)
+            #print(M)
             pl = ( po_inf/(1 + ((gamma-1)/2)*(M)**2)**(gamma/(gamma-1)) )
             p.append (((pl-p_static)/p_static))
         
@@ -177,7 +177,7 @@ def pressures(speed_of_sound, p_static):
 
 if __name__ == '__main__':
 
-    N_points = 1000
+    N_points = 100
     Mach = 1.5
     #gamma = 1.4
     r_over_l = 3
@@ -186,18 +186,20 @@ if __name__ == '__main__':
     PROP_R = r_over_l*ref_length*3.28084  ##### ??? 3.2
 
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/sears_haack_9800.stl')
-    body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/100_30_SH.stl')
+    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/100_30_SH.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod(SH).stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_vsp_smooth.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/test.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_vsp_bump.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/SH_half.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/n+2.stl')
+    body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/n+2.stl')
     #body_mesh = mesh.Mesh.from_file('studies/GoSwift/meshes/delta_wing.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/low_boom.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/low_boom2.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/biswis.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/JWB_0AOA.stl')
+    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/test_sw.stl')
+
 # --------------------------------------------------------------------------------------------------
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_smooth.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_bump.stl')
@@ -208,14 +210,14 @@ if __name__ == '__main__':
     #run_machline('studies/GoSwift/input_files/pod_smooth.json')
     #run_machline('studies/GoSwift/input_files/pod_bump.json')
 #-----------------------------------------------------------------------------------------------------
-    run_machline('studies/GoSwift/input_files/SH_input.json')
+    #run_machline('studies/GoSwift/input_files/SH_input.json')
     #run_machline('studies/GoSwift/input_files/SH_bump_input.json')
 
-    #run_machline('studies/GoSwift/input_files/n+2_input.json')
+    run_machline('studies/GoSwift/input_files/n+2_input.json')
     #run_machline('studies/GoSwift/input_files/input.json')
     #run_machline('studies/GoSwift/input_files/low_boom_input.json')
     #run_machline('studies/GoSwift/input_files/jaxa_input.json')
-
+    #run_machline('studies/GoSwift/input_files/test.json')
 
     pressures(968.08, 243.61 ) #### run at 50000 ft
     #pressures(295.07, 14170 ) #### run at 1400 m 5219
