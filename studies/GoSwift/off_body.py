@@ -177,7 +177,7 @@ def pressures(speed_of_sound, p_static):
 
 if __name__ == '__main__':
 
-    N_points = 100
+    N_points = 500
     Mach = 1.5
     #gamma = 1.4
     r_over_l = 3
@@ -199,7 +199,6 @@ if __name__ == '__main__':
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/biswis.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/JWB_0AOA.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/test_sw.stl')
-
 # --------------------------------------------------------------------------------------------------
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_smooth.stl')
     #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_bump.stl')
