@@ -1,14 +1,16 @@
 {
     "flow": {
-        "freestream_velocity": [1452.12, 0.0, 0.0],
+        "freestream_velocity": [1548.928, 0.0, 0.0],
         "gamma": 1.4,
-        "freestream_mach_number": 1.5
+        "freestream_mach_number": 1.6
     },
     "geometry": {
         "file": "studies/GoSwift/meshes/test_sw.stl",
         "spanwise_axis": "+y",
         "wake_model": {
-            "wake_present": false
+            "wake_present" : false,
+            "append_wake" : false,
+            "trefftz_distance" : 20.0
         },
         "reference": {
             "area": 15
@@ -29,7 +31,7 @@
         }
     },
     "output": {
-        "body_file": "studies/GoSwift/test_sw.vtk",
+        "body_file": "studies/GoSwift/results/test.vtk",
         "report_file": "studies/Goswift/results/test_sw.json",
         "offbody_points" : {
             "points_file" : "studies/Goswift/off_body/off_body.csv",

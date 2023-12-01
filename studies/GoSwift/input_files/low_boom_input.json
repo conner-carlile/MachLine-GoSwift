@@ -4,7 +4,7 @@
         "freestream_mach_number": 2
     },
     "geometry": {
-        "file": "studies/GoSwift/meshes/low_boom.stl",
+        "file": "studies/GoSwift/meshes/low_boom2.stl",
         "spanwise_axis" : "+y",
         "wake_model": {
             "wake_present" : false
@@ -20,7 +20,7 @@
     "post_processing" : {
     },
     "output": {
-        "body_file" : "studies/GoSwift/results/low_boom.vtk",
+        "body_file" : "studies/GoSwift/results/low_boom2.vtk",
         "wake_file" : "studies/GoSwift/results/low_boom_wake.vtk",
         "offbody_points" : {
             "points_file" : "studies/Goswift/off_body/off_body.csv",

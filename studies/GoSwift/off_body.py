@@ -12,6 +12,7 @@ from sboomwrapper import SboomWrapper
 
 
 def find_mins(obj):
+    """ Reads in stl mesh file and finds first (x,y,z) point for centerline and length calcs"""
 
     global minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos
     minx = obj.x.min()
@@ -28,35 +29,32 @@ def find_mins(obj):
         if x == minx:
             y_pos = y
             z_pos = z
-    print("length", maxx - minx)
+    #print("length", maxx - minx)
 
-# keep new y and z just shift x over outside mach cone
-def off_body(N_points,M_number):    
+## keep new y and z just shift x over outside mach cone *****????
+def off_body(N_points,M_number,body_lengths):    
+    """ Defines and creates csv file of desired off body points"""
     global x0, x, xf,y, L, points
     x_start = minx
     xf = maxx
-    y = (miny + maxy)/2   
-    #y = y_pos       ###########
+    #y = (miny + maxy)/2   
+    y = y_pos       ########### correct center
 
-    z = minz
-    #z = z_pos ############
-
-    #z = (maxz + minz)/2        # could miss pressure data by having center higher than nose center?????
+    #z = minz
+    z = z_pos ############ correct center
+    #z = (maxz + minz)/2     # could miss pressure data by having center higher than nose center?????
     
-    L = xf-x_start              # length of geometry
-    Lu =L + (L/2)               # length of csv line
+    L = xf-x_start           # length of geometry
+    Lu =L + (L/2)            # length of csv line
     
-    R = L * 3                   # how far away from body #
+    R = L * body_lengths     # how far away from body 
     zo = z-R
     ds = Lu/N_points
     
 
     #define x start and end location with mach cone offset
     mu = np.arcsin(1/M_number)
-    x0 = R/np.tan(mu)      #####-.5*L
-    
-    #print('xo: ', x0)
-    #print('new X: ', x)
+    x0 = R/np.tan(mu)      
 
 
     # define (x,y,z) locations for off body control points
@@ -67,14 +65,14 @@ def off_body(N_points,M_number):
     j = 0
     for i in range(N_points+1): 
         points[i][j] += (x)
-        points[i][j+1] +=  (y)
-        points[i][j+2] +=  (zo)
+        points[i][j+1] += (y)
+        points[i][j+2] += (zo)
         x = x + ds
 
-    print(points)
-    print('maxz', maxz)
-    print('minz', minz)
-    print('z', z)
+    #print(points)
+    #print('maxz', maxz)
+    #print('minz', minz)
+    #print('z', z)
     #print("x",x)
     #print("L", L)
     #print("ds", ds)
@@ -87,7 +85,7 @@ def off_body(N_points,M_number):
            writer.writerow(row)
 
 
-################################################################################################
+################################## Run MachLine #############################################
 def run_machline(input_filename, delete_input=False, run=True):
     """Runs MachLine with the given input and returns the report if MachLine generated one."""
 
@@ -115,9 +113,12 @@ def run_machline(input_filename, delete_input=False, run=True):
     return report
 ################################################################################################
 
-def pressures(speed_of_sound, p_static):
+def pressures(p_static, density, speed_of_sound, v_inf, Mach):
+    """ Calculates pressures from MachLine Calculated Velocities """
+
     c = speed_of_sound
     gamma = 1.4         ##### ratio of specific heats for air
+    #Mach = v_inf / c
     po_inf = p_static*((1 + (gamma-1)/2 * Mach**2) ** (gamma/(gamma-1)))
 
     #read in off body velocities from MachLine results file
@@ -131,97 +132,64 @@ def pressures(speed_of_sound, p_static):
 
     #calculate pressures from velocities
     global p, pressure
-    ps = []
+    Clp = []
     p = []
     xg = []
     for i in range(len(points)-1):
         xg.append((points[i][0] - x0)/L)
     #print("x: ", xg)
 
+#========================= working old pressure calcs ===========================================
     with open('studies/Goswift/results/off_body_velocity.csv','r') as file:
         rows = csv.DictReader(file)
         for row in rows:   
             M = abs(float(row['V'])/c)
-            #print(M)
             pl = ( po_inf/(1 + ((gamma-1)/2)*(M)**2)**(gamma/(gamma-1)) )
             p.append (((pl-p_static)/p_static))
-        
-
-           
     with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
         writer = csv.writer(file)
         writer.writerow((p))
-        #print(file)
+#================================================================================================
 
-    # plot pressures
-    #xg = []
-    #for i in range(len(points)-1): 
-    #    xg.append(((points[i][0]-x0)/L))
-    #
-    #print(p_boom)
-    #plt.plot(xg,p)
+#============================== new pressure ====================================================
+    #with open('studies/Goswift/results/off_body_velocity.csv','r') as file:
+    #    rows = csv.DictReader(file)
+    #    for row in rows: 
+    #        v = float(row['V'])
+    #        #print(v)
+    #        cp = (2/(gamma * Mach**2)) * (((1 + ((gamma-1)/2) * (1 - (v**2/v_inf**2)) * Mach**2))**(gamma/(gamma-1))-1)
+    #        print(cp)
+    #        pl = ( cp *  ((1/2)*density* v_inf**2) + p_static)
+    #        p.append (((pl-p_static)/p_static))
+#=================================================================================================
 
+    with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
+       writer = csv.writer(file)
+       writer.writerow((p))
+       #print(file)
+
+    # Plot pressure distribution
+    plt.figure(1)
     plt.plot(xg,p)
+    plt.ylim(-.015, .015)
     plt.xlabel("(X-Xo)/L")
     plt.ylabel("(p - pinf)/pinf")
-    #print((p))
     plt.show()
 
-    delimiter = ','
-    pressure = delimiter.join(str(p))
 
-    df = pd.read_csv("studies/GoSwift/results/off_body_pressure.csv")
-    df.to_csv("studies/GoSwift/results/off_body_pressure.dat", sep = ',' )
-
-
-
-if __name__ == '__main__':
-
-    N_points = 500
-    Mach = 1.5
-    #gamma = 1.4
-    r_over_l = 3
-    ref_length = 200 ###27.432 # for X-59   ########update for n+1
-    altitude = 53200
-    PROP_R = r_over_l*ref_length*3.28084  ##### ??? 3.2
-
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/sears_haack_9800.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/100_30_SH.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod(SH).stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_vsp_smooth.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/test.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_vsp_bump.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/SH_half.stl')
-    body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/n+2.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/GoSwift/meshes/delta_wing.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/low_boom.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/low_boom2.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/biswis.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/JWB_0AOA.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/test_sw.stl')
-# --------------------------------------------------------------------------------------------------
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_smooth.stl')
-    #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod_bump.stl')
-
-    find_mins(body_mesh)
-    off_body(N_points,Mach)  #N_points, Mach Number
-
-    #run_machline('studies/GoSwift/input_files/pod_smooth.json')
-    #run_machline('studies/GoSwift/input_files/pod_bump.json')
-#-----------------------------------------------------------------------------------------------------
-    #run_machline('studies/GoSwift/input_files/SH_input.json')
-    #run_machline('studies/GoSwift/input_files/SH_bump_input.json')
-
-    run_machline('studies/GoSwift/input_files/n+2_input.json')
-    #run_machline('studies/GoSwift/input_files/input.json')
-    #run_machline('studies/GoSwift/input_files/low_boom_input.json')
-    #run_machline('studies/GoSwift/input_files/jaxa_input.json')
-    #run_machline('studies/GoSwift/input_files/test.json')
-
-    pressures(968.08, 243.61 ) #### run at 50000 ft
-    #pressures(295.07, 14170 ) #### run at 1400 m 5219
+    # Future stuff for SBoom
+    #delimiter = ','
+    #pressure = delimiter.join(str(p))
+#
+    #df = pd.read_csv("studies/GoSwift/results/off_body_pressure.csv")
+    #df.to_csv("studies/GoSwift/results/off_body_pressure.dat", sep = ',' )
 
 
+
+
+#======================================== SBoom Stuff ================================================
+#def boom():
+    
     #data =  p #"studies/GoSwift/results/off_body_pressure.dat"  #### data should be of type [x, dp]
 
     #data = np.genfromtxt( dp_directory)

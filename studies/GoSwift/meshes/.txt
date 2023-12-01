@@ -1,0 +1,21 @@
+...Comp Geom...
+1 Num Comps
+5 Total Num Meshes
+19152 Total Num Tris
+
+Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
+ 3086.832   2484.718   5590.524   4794.023  MeshGeom       
+ 6807.168   6023.506   3652.209   3442.881  MeshGeom       
+  559.558    533.030     75.893     75.893  MeshGeom       
+  559.558    533.030     75.893     75.893  MeshGeom       
+-------------------------------------------------
+11013.115   9574.283   9394.520   8388.691  Totals         
+
+Tag_Theo_Area   Tag_Wet_Area    Tag_Name
+     3086.832       2484.718    MeshGeom_S_Surf0
+     3403.584       3011.753    MeshGeom_S_Surf0
+     3403.584       3011.753    MeshGeom_S_Surf0
+      559.558        533.030    MeshGeom_S_Surf0
+      559.558        533.030    MeshGeom_S_Surf0
+WARNING: 1 open meshes merged
+     Merged: MeshGeom
