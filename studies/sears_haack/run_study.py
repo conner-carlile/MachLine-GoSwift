@@ -13,6 +13,7 @@ def run_case(refinement, M, run_machline=True):
     # Parameters
     input_file = "studies/sears_haack/sears_haack_input.json"
     mesh_file = "studies/sears_haack/meshes/SH_{0}.tri".format(refinement)
+    #mesh_file = "studies/sears_haack/meshes/SH_{0}.stl".format(refinement)
     result_file = "studies/sears_haack/results/SH_{0}_M_{1}.vtk".format(refinement, M)
     data_file = "studies/sears_haack/results/SH_{0}_M_{1}_data.csv".format(refinement, M)
     report_file = "studies/sears_haack/reports/SH_{0}_M_{1}.json".format(refinement, M)

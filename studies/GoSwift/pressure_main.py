@@ -1,13 +1,24 @@
-from off_body import mesh, find_mins, off_body, run_machline, pressures
+import json
+from off_body import *
+#from deform_tri_module import *
 
 
-N_points = 500
-Mach = 1.6
+file = "studies/GoSwift/input_files/test.json"
+
+input = json.loads(open(file).read())
+
+Mach = input["flow"]["freestream_mach_number"]
+print(Mach)
+
+N_points = 1000
+#Mach = 1.5
 #gamma = 1.4
 r_over_l = 3
-ref_length = 200 ###27.432 # for X-59   ########update for n+1
+ref_length = 200 ###27.432 # for X-59   ########update for n+2
 altitude = 50000
 PROP_R = r_over_l*ref_length*3.28084  ##### ??? 3.2
+
+
 #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/sears_haack_9800.stl')
 #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/100_30_SH.stl')
 #body_mesh = mesh.Mesh.from_file('studies/Goswift/meshes/pod(SH).stl')
@@ -41,3 +52,9 @@ run_machline('studies/GoSwift/input_files/test.json')
 
 pressures(243.61, .00036392, 968.08, 1548.928, Mach ) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
 #pressures(295.07, 14170 ) #### run at 1400 m 5219
+
+#undefx = []
+#def = 
+#plt.plot(xundef,pundef)
+#plt.plot(xdef,pdef)
+#plt.show()

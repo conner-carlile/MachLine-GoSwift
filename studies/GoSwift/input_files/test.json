@@ -20,7 +20,7 @@
     "solver": {
 
         "formulation": "dirichlet-morino",
-        "run_checks": true,
+        "run_checks": false,
         "control_point_offset": 1.1e-08
 
     },

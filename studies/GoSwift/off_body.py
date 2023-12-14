@@ -49,7 +49,7 @@ def off_body(N_points,M_number,body_lengths):
     
     R = L * body_lengths     # how far away from body 
     zo = z-R
-    ds = Lu/N_points
+    ds = Lu/N_points 
     
 
     #define x start and end location with mach cone offset
@@ -59,7 +59,7 @@ def off_body(N_points,M_number,body_lengths):
 
     # define (x,y,z) locations for off body control points
     #assuming x is stream wise direction
-    x = x0 
+    x = x0  ###### - 5
     points = np.zeros((N_points+1, 3), dtype=float)
     i = 0
     j = 0
@@ -67,7 +67,7 @@ def off_body(N_points,M_number,body_lengths):
         points[i][j] += (x)
         points[i][j+1] += (y)
         points[i][j+2] += (zo)
-        x = x + ds
+        x += ds
 
     #print(points)
     #print('maxz', maxz)
@@ -132,11 +132,11 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach):
 
     #calculate pressures from velocities
     global p, pressure
-    Clp = []
     p = []
     xg = []
     for i in range(len(points)-1):
-        xg.append((points[i][0] - x0)/L)
+        #xg.append((points[i][0] - x0)/L)  #!
+        xg.append((points[i][0]-x0)*12)
     #print("x: ", xg)
 
 #========================= working old pressure calcs ===========================================
@@ -146,9 +146,13 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach):
             M = abs(float(row['V'])/c)
             pl = ( po_inf/(1 + ((gamma-1)/2)*(M)**2)**(gamma/(gamma-1)) )
             p.append (((pl-p_static)/p_static))
+    
     with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
         writer = csv.writer(file)
-        writer.writerow((p))
+        #writer.writerow((xg))
+        #writer.writerow((p))
+        writer.writerow(["x_loc, Pressure"])
+        writer.writerows(zip(xg,p))
 #================================================================================================
 
 #============================== new pressure ====================================================
@@ -161,19 +165,24 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach):
     #        print(cp)
     #        pl = ( cp *  ((1/2)*density* v_inf**2) + p_static)
     #        p.append (((pl-p_static)/p_static))
+    #        #p.append(cp)
+    #with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
+    #   writer = csv.writer(file)
+    #   writer.writerow((p))
 #=================================================================================================
 
-    with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
-       writer = csv.writer(file)
-       writer.writerow((p))
-       #print(file)
-
     # Plot pressure distribution
+    print("x: ", xg)
+    print()
+    print("dp: ", p)
     plt.figure(1)
     plt.plot(xg,p)
-    plt.ylim(-.015, .015)
-    plt.xlabel("(X-Xo)/L")
-    plt.ylabel("(p - pinf)/pinf")
+    #plt.ylim(-.015, .015)
+    #plt.xlabel("(X-Xo)/L")
+    #plt.ylabel("(p - pinf)/pinf")
+    plt.xlabel("X")
+    plt.ylabel("dP/P")
+    plt.title("Near-Field Overpressure")
     plt.show()
 
 

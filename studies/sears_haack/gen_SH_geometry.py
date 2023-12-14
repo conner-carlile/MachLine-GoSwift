@@ -110,10 +110,10 @@ def _write_TRI(nVerts, nTris, vertices, tri_verts, comp_num, filename = 'test_fi
 '''------------RUN SCRIPT------------'''
 if __name__ == "__main__":
 
-    num_ax = 80 # number of axial panels
+    num_ax = 100 # number of axial panels
     num_theta = 30 # number of radial panels
-    length = 0.6096 # length of SH body
-    rmax = length * 0.037879 # maximum radius of SH body
+    length = 20 # length of SH body
+    rmax = length * 0.075 # maximum radius of SH body
         
     nVerts, nTris, vertices, tri_verts, comp_num, r_l_ratio = _generate_SH(rmax, length, num_ax, num_theta)
     print('R over L ratio: ', r_l_ratio)
