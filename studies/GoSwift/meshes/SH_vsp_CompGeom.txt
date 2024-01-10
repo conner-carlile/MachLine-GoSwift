@@ -1,10 +1,14 @@
 ...Comp Geom...
 2 Num Comps
 2 Total Num Meshes
-9408 Total Num Tris
+6320 Total Num Tris
 
 Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
-  136.152    135.143     82.509     82.486  BORGeom        
-    3.283      1.471      0.328      0.148  BORGeom        
+    6.803      2.472      1.318      0.485  BORGeom        
+  136.375    134.526     82.650     82.489  MeshGeom       
 -------------------------------------------------
-  139.436    136.614     82.837     82.634  Totals         
+  143.178    136.998     83.968     82.973  Totals         
+
+Tag_Theo_Area   Tag_Wet_Area    Tag_Name
+        6.803          2.472    BORGeom_S_Surf0
+      136.375        134.526    MeshGeom_S_Surf0

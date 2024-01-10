@@ -1,9 +1,11 @@
 import numpy as np
+#import pygem
 from pygem.ffd import FFD
-import pygem
 import pandas as pd
 import pyevtk.hl as vtk
 from scipy import interpolate
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def load_tri_mesh_points(tri_filename):
@@ -27,27 +29,41 @@ def deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd
     
     ffd = FFD([numx, numy, numz])
     
-    z_deform[ffd_delta_index[0],ffd_delta_index[1],ffd_delta_index[2]] = ffd_delta_z
+
+    # Ensure indices are within bounds *******************************************
+    valid_indices = (
+        min(max(ffd_delta_index[0], 0), numx - 1),
+        min(max(ffd_delta_index[1], 0), numy - 1),
+        min(max(ffd_delta_index[2], 0), numz - 1)
+        )
+    
+    z_deform[valid_indices[0], valid_indices[1], valid_indices[2]] = ffd_delta_z    #***************************************
+    #z_deform[ffd_delta_index[0],ffd_delta_index[1],ffd_delta_index[2]] = ffd_delta_z
     
     ffd.box_length = ffd_lengths
     ffd.box_origin = ffd_origin
     ffd.array_mu_z = z_deform
     
-    deformed_mesh_points, index_deformed_points = ffd(mesh_points)
+    #print(deform_mesh_points)
+
+    #deformed_mesh_points, index_deformed_points = ffd(mesh_points)     #original#
+    deformed_mesh_points = ffd(mesh_points)
+    
     # ffd.write_parameters(filename = 'test_params.txt')
     
     if vtk_box_flag == True:
         control_points = ffd.control_points()
-        # fig = plt.figure(100)
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.scatter(control_points[0], control_points[1], control_points[2], s=50, c='red')
-        # plt.show()
-        # c_p_b = ffd.control_points(deformed=True)
-        # vtk.gridToVTK('./cont_p_base', c_p_b[:,0], c_p_b[:,1], c_p_b[:,2])
+        print("control points:", control_points)
+        #fig = plt.figure(100)
+        #ax = fig.add_subplot(111, projection='3d')
+        #ax.scatter(control_points[0], control_points[1], control_points[2], s=50, c='red')
+        #plt.show()
+        c_p_b = ffd.control_points(deformed=True)  ## True origionaly
+        vtk.gridToVTK('./cont_p_base', c_p_b[:,0], c_p_b[:,1], c_p_b[:,2])
         vtk.gridToVTK('./FFD_control_points_' + str(deformation_num), control_points[:,0], control_points[:,1], control_points[:,2])
+        
     
-    
-    return deformed_mesh_points, index_deformed_points
+    return deformed_mesh_points#, index_deformed_points
 
 def get_keel_line_normal(keel_points, x_center):
     
@@ -209,7 +225,9 @@ def write_tri_file(new_filename, deformed_mesh_points, tri_verts, comp_num):
     nVerts = len(deformed_mesh_points[:,0])
     nTris = len(tri_verts[:,0])
     
-    with open(new_filename + '.tri', 'w') as export_handle:
+    #with open(new_filename + '.tri', 'w') as export_handle:
+    with open(new_filename, 'w') as export_handle:
+
         
         # Write header
         print("{0:<18}{1:<18}".format(nVerts, nTris), file=export_handle)
@@ -222,6 +240,8 @@ def write_tri_file(new_filename, deformed_mesh_points, tri_verts, comp_num):
             
         for comp_num in comp_num:
             print("{0:<4d}".format(int(comp_num[0])), file=export_handle)
+
+
 
 def write_tecplot_file(new_filename, deformed_mesh_points, tri_verts, comp_num):
     
@@ -258,4 +278,79 @@ def write_tecplot_delta_z_file(new_filename, deformed_mesh_points, delta_mesh_po
         
         for tri_int in tri_verts:
             print("{0:<12}{1:<12}{2:<12}".format(*tri_int), file=export_handle)
+
+
+
+if __name__ == "__main__":
+    #file = "studies/sears_haack/meshes/SH_100_30.tri"
+    file = "studies/GoSwift/meshes/test_sw.tri"
+
+    # correct for 20 ft sears haack   (center geom)
+    "(1, 1, 2), (-0.5, -0.5, -2), (3, 3, 3), -0.5, (1, 1, 1)" #something is interesting about this configuration
+
+    #ffd_lengths = (4,1,2)   # ensure top of box is at centerline..... find nose point from nin and max function
+    ffd_lengths = (1,1,2)
+    #ffd_origin = (10-(4/2),-1/2,-2) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    ffd_origin = (-0.5, -0.5, -2)
+    ffd_num_points = (3,3,3)
+    ffd_delta_z = -0.5  # +2 is bump on top
+    ffd_delta_index = (1,1,1)   #(1,1,1) = works
+
+    #ffd_lengths = (4, 1, 2)
+    #ffd_origin = (0.0, -0.5, -2) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    #ffd_num_points = (3,3,3)
+    #ffd_delta_z = -1  # +2 is bump on top
+    #ffd_delta_index = (1,1,1)   #(1,1,1) = works
+
+    ##input for N+2
+    #ffd_lengths = (5,5,5)
+    #ffd_origin = (50-(5/2),0-(5/2),-5) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    #ffd_num_points = (3,3,3)
+    #ffd_delta_z = -10  # +2 is bump on top
+    #ffd_delta_index = (1,1,1)   #(1,1,1) = works
+
+
+    vert_coords, tri_verts, comp_num = load_tri_mesh_points(file)
+    deformed_mesh_points = deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index, vert_coords,0,True)
+    write_tri_file("studies/sears_haack/meshes/SH_100_30_deformed",deformed_mesh_points,tri_verts,comp_num)
+
+    #original mesh
+    print(vert_coords)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    #fig.tight_layout()
+    x = vert_coords[:,0]
+    y = vert_coords[:,1]
+    z = vert_coords[:,2]
+    ax.scatter(x,y,z)
+
+    #deformed mesh
+    a = deformed_mesh_points[:,0]
+    b = deformed_mesh_points[:,1]
+    c = deformed_mesh_points[:,2]
+    ax.scatter(a,b,c)
+    fig.tight_layout()
+
+
+    #plt.ylim(-5,5)
+    #ax.set_zlim(-5,5)
+    #ax.view_init(45,-90,)
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    #plt.xlim(0,154)
+    #plt.ylim(0,20)
+    ax.set_aspect("equal")
+
+    ## plot box
+    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+
+    plt.show()
             
