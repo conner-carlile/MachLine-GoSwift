@@ -31,7 +31,7 @@
         "body_file": "studies/GoSwift/results/test.vtk",
         "report_file": "studies/Goswift/results/test_sw.json",
         "offbody_points" : {
-            "points_file" : "studies/Goswift/off_body/off_body.csv",
+            "points_file" : "studies/Goswift/off_body/off_body_sheet.csv",
             "output_file" : "studies/Goswift/results/off_body_sample.csv"
         }
     }

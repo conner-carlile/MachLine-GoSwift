@@ -11,12 +11,15 @@ start_time = time.time()
 input_file = "studies/GoSwift/input_files/test.json"
 
 input = json.loads(open(input_file).read())
-Mach = input["flow"]["freestream_mach_number"]
+MACH = input["flow"]["freestream_mach_number"]
+
 N_points = 1000
 r_over_l = 3
 ref_length = 20 # 154 ft for N+2,  20 ft for SH
 altitude = 50000
 PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
+
+num_azimuth = 1 ### update in sBOOM function call
 
 
 ## Initialize storage list for FFD Box, Nearfield Sig, Ground Sig, and Loudness
@@ -38,7 +41,9 @@ baseline_tri = "studies/GoSwift/meshes/test_sw.tri"
 ## Create CSV file for off body points
 body_mesh = mesh.Mesh.from_file(baseline_stl)
 minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
-off_body(N_points,Mach,r_over_l)
+off_body(N_points,MACH,r_over_l) 
+angles=[0]
+#angles = off_body_sheet(N_points, MACH, r_over_l, num_azimuth)  ### angle stuff
 
 length_body = maxx - minx
 
@@ -59,7 +64,8 @@ ffd_num_points = (3,3,3) # Constant?
 ffd_delta_z0 = (0) 
 ffd_delta_index = (1,1,1)  # Constant 
 
-lengths, origins, bumps = (4,10,4)
+#lengths, origins, bumps = (4,int(length_body),4)
+lengths, origins, bumps = (1,1,1)
 #lengths, origins, bumps = (2,int(length_body - ffd_lengths[0]),2)
 "'####### Find a way to not check Zero deformation except for the first time #######'"
 # for i in range (lengths of mesh - ffd_lengths[0]) ## moves along entire mesh keeping entire ffd box on mesh
@@ -71,7 +77,7 @@ for i in range(lengths): # lengths 5
         ffd_origin = (ffd_origin0[0] + j, ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
         for k in range(bumps): # delta z 4
             ffd_delta_z = (ffd_delta_z0 - (k/2))
-            
+
 
             ## Deform baseline mesh with new FFD box parameters
             vert_coords, tri_verts, comp_num = load_tri_mesh_points(baseline_tri)
@@ -80,15 +86,30 @@ for i in range(lengths): # lengths 5
 
             ## Run MachLine with new deformed geometry
             run_machline('studies/GoSwift/input_files/test.json')
+            #run_machline('studies/GoSwift/input_files/sheet_input.json')   #### sheet input
 
             ## Post processing of bump location and pressure data
             ffd_box.append([ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index])
-            xg,p = pressures(243.61, .00036392, 968.08, 1548.928, Mach ) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
+            xg,p = pressures(243.61, .00036392, 968.08, 1548.928, MACH, angles) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
             x_loc.append(xg)
             nearfield_sig.append(p)
-            g_sig, noise_level = boom(altitude, PROP_R, Mach)
+
+            #for n in range(len(points)/num_azimuth - 1)   ## loop through lines in pressure file....????
+            #   open sheet file 
+            #    for row in sheet
+            #      find and define one signature for angle
+            #    -----skip header
+            #   define azimuth angle associated with line
+            #   asign azimuth and run sBOOM
+            ### figure out how to accurately save each azimuth angle signature data
+            ### (header = [azimuth , [signature]] )
+
+            ## Run sBOOM
+            g_sig, noise_level = boom(MACH, r_over_l, ref_length, altitude) #, N_points, angles) 
             ground_sig.append(g_sig)
             loudness.append(noise_level)
+
+    print("Iteration: ", (i*j*k) + 1 , "/", lengths*origins*bumps)
 
 print()
 print("Writing Test Case Data to Files....")

@@ -284,16 +284,18 @@ def write_tecplot_delta_z_file(new_filename, deformed_mesh_points, delta_mesh_po
 if __name__ == "__main__":
     #file = "studies/sears_haack/meshes/SH_100_30.tri"
     file = "studies/GoSwift/meshes/test_sw.tri"
+    #file = "studies/GoSwift/meshes/nasa25d.tri"
 
     # correct for 20 ft sears haack   (center geom)
     "(1, 1, 2), (-0.5, -0.5, -2), (3, 3, 3), -0.5, (1, 1, 1)" #something is interesting about this configuration
-
+#(2, 1, 2), (0, -0.5, -2), (3, 3, 3), -1.5, (1, 1, 1)
+#(1, 1, 2), (16, -0.5, -2), (3, 3, 3), -1.5, (1, 1, 1)
     #ffd_lengths = (4,1,2)   # ensure top of box is at centerline..... find nose point from nin and max function
     ffd_lengths = (1,1,2)
     #ffd_origin = (10-(4/2),-1/2,-2) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-    ffd_origin = (-0.5, -0.5, -2)
+    ffd_origin = (16, -.5, -2)
     ffd_num_points = (3,3,3)
-    ffd_delta_z = -0.5  # +2 is bump on top
+    ffd_delta_z = -1.5  # +2 is bump on top
     ffd_delta_index = (1,1,1)   #(1,1,1) = works
 
     #ffd_lengths = (4, 1, 2)
