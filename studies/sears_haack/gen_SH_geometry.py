@@ -112,10 +112,13 @@ if __name__ == "__main__":
 
     num_ax = 100 # number of axial panels
     num_theta = 30 # number of radial panels
-    length = 20 # length of SH body
+    length = 22.27666 # length of SH body
+    #rmax = length * 0.075 # maximum radius of SH body
     rmax = length * 0.075 # maximum radius of SH body
+
         
     nVerts, nTris, vertices, tri_verts, comp_num, r_l_ratio = _generate_SH(rmax, length, num_ax, num_theta)
     print('R over L ratio: ', r_l_ratio)
 
-    _write_TRI(nVerts, nTris, vertices, tri_verts, comp_num, filename = 'studies/sears_haack/meshes/SH_{0}_{1}.tri'.format(num_ax, num_theta))
+    #_write_TRI(nVerts, nTris, vertices, tri_verts, comp_num, filename = 'studies/GoSwift/meshes/SH_{0}_{1}.tri'.format(num_ax, num_theta))
+    _write_TRI(nVerts, nTris, vertices, tri_verts, comp_num, filename = 'studies/GoSwift/meshes/pod.tri'.format(num_ax, num_theta))

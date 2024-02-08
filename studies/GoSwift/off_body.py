@@ -87,11 +87,12 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
 
     # Define azimuth angles
     delta_phi = 90 / (num_azimuth + 1)
-    print(delta_phi)
+
+    print("delta phi: ",delta_phi)
     angles = []
     for i in range((num_azimuth * 2) + 1):
         angles.append(delta_phi * (i + 1))
-
+ 
     with open('studies/Goswift/off_body/off_body_sheet.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["points"])
@@ -114,30 +115,39 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
             # define x start and end location with mach cone offset
             mu = np.arcsin(1 / M_number)
             x0 = R / np.tan(mu)  # will stay constant for all angles
+            
             #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
             y0 = (R) * np.cos((angles[i]) * np.pi / 180)
 
 
             # define (x, y, z) locations for off-body control points
             # assuming x is the streamwise direction
+            x = x0
             points = np.zeros((N_points, 3), dtype=float)
 
             for j in range(N_points): #+ 1
-                points[j][0] = x0
+                points[j][0] = x
                 points[j][1] = y0
                 points[j][2] = zo
-                x0 += ds
-
+                x += ds
+                
                 # Write each point to the CSV file
                 writer.writerow(points[j])
-
+   
     return angles
 
 
 
 ################################## Run MachLine #############################################
-def run_machline(input_filename, delete_input=False, run=True):
+def run_machline(input_filename, delete_output=True, run=True):
     """Runs MachLine with the given input and returns the report if MachLine generated one."""
+    
+    ## Delete output from previous iteration
+    if delete_output:
+        input = json.loads(open(input_filename).read())
+        output_filename = input["output"]["report_file"]
+        if os.path.exists(output_filename):
+            os.remove(output_filename)
 
     # Run
     if run:
@@ -155,8 +165,8 @@ def run_machline(input_filename, delete_input=False, run=True):
             report = None
     else:
         report = None
-
-    # Delete input
+    
+    ## Delete input
     #if delete_input:
     #    os.remove(input_filename)
 
@@ -184,24 +194,24 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
     global p, pressure
     p = []
     xg = []
+
     for i in range(len(angles)):   #### added this.......
         for j in range(len(points)):  ## - 1
         #xg.append((points[i][0] - x0)/L)  #!
-            xg.append((points[j][0]-x0)* 12) #*12
+            xg.append((points[j][0]-x0)*12) #*12
+    print("xg: ",xg)
     #print("x: ", xg)
 
 #========================= working old pressure calcs ===========================================
     with open('studies/Goswift/results/off_body_velocity.csv','r') as file:
         rows = csv.DictReader(file)
         for row in rows:   
-            M = abs(float(row['V'])/c)
+            M = abs(float(row['V'])/c) #### multiply by new calc velocity
             pl = ( po_inf/(1 + ((gamma-1)/2)*(M)**2)**(gamma/(gamma-1)) )
             p.append (((pl-p_static)/p_static))
     
     with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
         writer = csv.writer(file)
-        #writer.writerow((xg))
-        #writer.writerow((p))
         writer.writerow(["x_loc, Pressure"])
         writer.writerows(zip(xg,p))
 #================================================================================================
@@ -227,7 +237,7 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
 
 
 #======================================== SBoom Stuff ================================================
-#def boom(MACH, r_over_l, ref_length, altitude):  ## add azimuth angles here and define after initialization
+#def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):
 #    
 #    print()
 #    print("Running sBoom...")
@@ -269,14 +279,14 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
 #
 #    return g_sig, noise_level
 
-def boom(MACH, r_over_l, ref_length, altitude, num_points,angles):  ## add azimuth angles here and define a
+
+#############  working azimuth angles, just need to add angle constraint ###########
+def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):  ## add azimuth angles here and define a
     
     print()
     print("Running sBoom...")
-    #dp_directory = "studies/GoSwift"
     data = np.genfromtxt('studies/GoSwift/results/off_body_pressure.csv', delimiter=',', skip_header=1)
-    #conv = 1/0.0254
-    PROP_R = r_over_l*ref_length# *3.28084
+    PROP_R = r_over_l*ref_length # *3.28084
 
     #sig = np.asarray([data[:,0], data[:,1]]).T
     
@@ -291,8 +301,6 @@ def boom(MACH, r_over_l, ref_length, altitude, num_points,angles):  ## add azimu
     g_sig = []
     noise_level = []
     for j in range(len(sig_list)):
-        '''can check different angles individually but something changes when I add the loop.....'''
-        angle = []
         sig = sig_list[j]
         angle = (angles[j]-90)
 
@@ -301,9 +309,8 @@ def boom(MACH, r_over_l, ref_length, altitude, num_points,angles):  ## add azimu
                     altitude=altitude,
                     propagation_start=PROP_R,
                     altitude_stop=0,
-                    output_format=0,
-                    input_xdim=2,
-                    #azimuthal_angles = 0,
+                    output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
+                    input_xdim=1,       ## 1 = inches, 0 = ft
                     num_azimuthal = 1,
                     azimuthal_angles = angle,
                     propagation_points=40000,

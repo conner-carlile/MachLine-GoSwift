@@ -221,7 +221,7 @@ def scale_mesh_points(x_scale, y_scale, z_scale, mesh_points):
 
 def write_tri_file(new_filename, deformed_mesh_points, tri_verts, comp_num):
     
-    print('Starting write-to-file (Cart3D):')
+    print('Starting write-to-file (.tri):')
     nVerts = len(deformed_mesh_points[:,0])
     nTris = len(tri_verts[:,0])
     
@@ -282,77 +282,56 @@ def write_tecplot_delta_z_file(new_filename, deformed_mesh_points, delta_mesh_po
 
 
 if __name__ == "__main__":
-    #file = "studies/sears_haack/meshes/SH_100_30.tri"
-    file = "studies/GoSwift/meshes/test_sw.tri"
-    #file = "studies/GoSwift/meshes/nasa25d.tri"
+    #location of undeformed geometry .tri file
+    file = "studies/GoSwift/meshes/pod.tri"
 
-    # correct for 20 ft sears haack   (center geom)
-    "(1, 1, 2), (-0.5, -0.5, -2), (3, 3, 3), -0.5, (1, 1, 1)" #something is interesting about this configuration
-#(2, 1, 2), (0, -0.5, -2), (3, 3, 3), -1.5, (1, 1, 1)
-#(1, 1, 2), (16, -0.5, -2), (3, 3, 3), -1.5, (1, 1, 1)
-    #ffd_lengths = (4,1,2)   # ensure top of box is at centerline..... find nose point from nin and max function
+    #Define ffd box parameters
     ffd_lengths = (1,1,2)
-    #ffd_origin = (10-(4/2),-1/2,-2) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-    ffd_origin = (16, -.5, -2)
-    ffd_num_points = (3,3,3)
-    ffd_delta_z = -1.5  # +2 is bump on top
-    ffd_delta_index = (1,1,1)   #(1,1,1) = works
+    ffd_origin = (0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    ffd_num_points = (3,3,3) ## I keep this constant
+    ffd_delta_z = -2  ## I place the bump on the bottom of the geometry and "squish the box" instead of pull, thats why the delta z is negative
+    ffd_delta_index = (1,1,1)   #Any other vector 
 
-    #ffd_lengths = (4, 1, 2)
-    #ffd_origin = (0.0, -0.5, -2) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-    #ffd_num_points = (3,3,3)
-    #ffd_delta_z = -1  # +2 is bump on top
-    #ffd_delta_index = (1,1,1)   #(1,1,1) = works
-
-    ##input for N+2
-    #ffd_lengths = (5,5,5)
-    #ffd_origin = (50-(5/2),0-(5/2),-5) ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-    #ffd_num_points = (3,3,3)
-    #ffd_delta_z = -10  # +2 is bump on top
-    #ffd_delta_index = (1,1,1)   #(1,1,1) = works
 
 
     vert_coords, tri_verts, comp_num = load_tri_mesh_points(file)
     deformed_mesh_points = deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index, vert_coords,0,True)
-    write_tri_file("studies/sears_haack/meshes/SH_100_30_deformed",deformed_mesh_points,tri_verts,comp_num)
+    write_tri_file("studies/GoSwift/meshes/pod_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
 
-    #original mesh
-    print(vert_coords)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ## The following is only to plot the original and deformed geometries and does not effect results
+
+    ##original mesh
+    #print(vert_coords)
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111, projection='3d')
+    ##fig.tight_layout()
+    #x = vert_coords[:,0]
+    #y = vert_coords[:,1]
+    #z = vert_coords[:,2]
+    #ax.scatter(x,y,z)
+
+    ##deformed mesh
+    #a = deformed_mesh_points[:,0]
+    #b = deformed_mesh_points[:,1]
+    #c = deformed_mesh_points[:,2]
+    #ax.scatter(a,b,c)
     #fig.tight_layout()
-    x = vert_coords[:,0]
-    y = vert_coords[:,1]
-    z = vert_coords[:,2]
-    ax.scatter(x,y,z)
-
-    #deformed mesh
-    a = deformed_mesh_points[:,0]
-    b = deformed_mesh_points[:,1]
-    c = deformed_mesh_points[:,2]
-    ax.scatter(a,b,c)
-    fig.tight_layout()
 
 
-    #plt.ylim(-5,5)
-    #ax.set_zlim(-5,5)
-    #ax.view_init(45,-90,)
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    #plt.xlim(0,154)
-    #plt.ylim(0,20)
-    ax.set_aspect("equal")
+    #ax.set_xlabel("X")
+    #ax.set_ylabel("Y")
+    #ax.set_zlabel("Z")
+    #ax.set_aspect("equal")
 
-    ## plot box
-    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ## plot ffd box corners
+    #ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
 
-    plt.show()
+    #plt.show()
             

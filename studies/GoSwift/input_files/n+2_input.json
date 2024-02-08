@@ -1,28 +1,34 @@
 {
     "flow": {
-        "freestream_velocity": [1452.12, 0.0, 0.0],
-        "freestream_mach_number": 1.5
+        "freestream_velocity": [1548.928, 0.0, 0.0],
+        "gamma": 1.4,
+        "freestream_mach_number": 1.6
     },
     "geometry": {
-        "file": "studies/GoSwift/meshes/n+2.stl",
-        "spanwise_axis" : "+y",
+        "file": "studies/GoSwift/meshes/N+2_deformed.tri",
+        "spanwise_axis": "+y",
         "wake_model": {
-            "wake_present" : false
+            "wake_present" : false,
+            "append_wake" : false,
+            "trefftz_distance" : 20.0
         }
     },
     "solver": {
         "formulation": "dirichlet-morino",
         "control_point_offset": 1.1e-05
     },
-    "post_processing" : {
+    "post_processing": {
+        "pressure_rules":{
+            "incompressible": false,
+            "isentropic": true
+        }
     },
     "output": {
-        "body_file" : "studies/GoSwift/results/n+2.vtk",
-        "wake_file" : "studies/GoSwift/results/n+2_wake.vtk",
+        "body_file": "studies/GoSwift/results/test.vtk",
+        "report_file": "studies/Goswift/results/test_sw.json",
         "offbody_points" : {
-            "points_file" : "studies/Goswift/off_body/off_body.csv",
+            "points_file" : "studies/Goswift/off_body/off_body_sheet.csv",
             "output_file" : "studies/Goswift/results/off_body_sample.csv"
         }
-        
     }
 }

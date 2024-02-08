@@ -5,6 +5,7 @@ import pickle
 from stl import mesh
 from off_body import *
 from deform_tri_module import *
+from ambiance import Atmosphere
 start_time = time.time()
 
 ## Input Parameters
@@ -15,11 +16,15 @@ MACH = input["flow"]["freestream_mach_number"]
 
 N_points = 1000
 r_over_l = 3
-ref_length = 20 # 154 ft for N+2,  20 ft for SH
+ref_length = 23 # 154 ft for N+2,  20 ft for SH
 altitude = 50000
+#v_inf... = atm calcs
+p_static = 243.61
+density = .00036392
+speed_of_sound = 968.08
+v_inf = 1548.928
 PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
-
-num_azimuth = 1 ### update in sBOOM function call
+num_azimuth = 0 
 
 
 ## Initialize storage list for FFD Box, Nearfield Sig, Ground Sig, and Loudness
@@ -41,23 +46,22 @@ baseline_tri = "studies/GoSwift/meshes/test_sw.tri"
 ## Create CSV file for off body points
 body_mesh = mesh.Mesh.from_file(baseline_stl)
 minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
-off_body(N_points,MACH,r_over_l) 
-angles=[0]
-#angles = off_body_sheet(N_points, MACH, r_over_l, num_azimuth)  ### angle stuff
+#off_body(N_points,MACH,r_over_l) 
+angles = off_body_sheet(N_points, MACH, r_over_l, num_azimuth)  ### angle stuff
 
 length_body = maxx - minx
 
 ## Convert baseline .stl file to .tri file for FFD
 stl_to_tri(baseline_stl, baseline_tri)
 
-# Initialize FFD box info lists
+## Initialize FFD box info lists
 length = []
 origin = []
 num_points = []
 delta_z = []
 delta_index = []
 
-## Define initial FFD data for loop     (pre defined locations? or algorithm?)
+## Define initial FFD data for loop    
 ffd_lengths0 = (1,1,2)
 ffd_origin0 = (0,0,0)
 ffd_num_points = (3,3,3) # Constant?
@@ -66,18 +70,18 @@ ffd_delta_index = (1,1,1)  # Constant
 
 #lengths, origins, bumps = (4,int(length_body),4)
 lengths, origins, bumps = (1,1,1)
-#lengths, origins, bumps = (2,int(length_body - ffd_lengths[0]),2)
+#lengths, origins, bumps = (4, int(length_body - ffd_lengths0[0]), 4) ## moves along entire mesh keeping entire ffd box on mesh (not really true)
 "'####### Find a way to not check Zero deformation except for the first time #######'"
-# for i in range (lengths of mesh - ffd_lengths[0]) ## moves along entire mesh keeping entire ffd box on mesh
 
-for i in range(lengths): # lengths 5
+## Test Case Loops
+iteration = 0
+skips = 0
+for i in range(lengths):
     ffd_lengths = (ffd_lengths0[0] + i, ffd_lengths0[1], ffd_lengths0[2])
-    #for j in range(origins): # origins 5
-    for j in range(origins): #(int(length_body - ffd_lengths[0])): ## moves along entire mesh keeping entire ffd box on mesh
+    for j in range(origins):
         ffd_origin = (ffd_origin0[0] + j, ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
-        for k in range(bumps): # delta z 4
-            ffd_delta_z = (ffd_delta_z0 - (k/2))
-
+        for k in range(bumps):
+            ffd_delta_z = (ffd_delta_z0 - (k/4))
 
             ## Deform baseline mesh with new FFD box parameters
             vert_coords, tri_verts, comp_num = load_tri_mesh_points(baseline_tri)
@@ -85,31 +89,33 @@ for i in range(lengths): # lengths 5
             write_tri_file("studies/GoSwift/meshes/test_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
 
             ## Run MachLine with new deformed geometry
-            run_machline('studies/GoSwift/input_files/test.json')
-            #run_machline('studies/GoSwift/input_files/sheet_input.json')   #### sheet input
+            report = run_machline('studies/GoSwift/input_files/test.json')
+            #report = run_machline('studies/GoSwift/input_files/sheet_input.json')  ## Can probably delete this because test input file has sheet capability now
 
+            ## Skips folowing calculations if MachLine failed to generate report
+            if report == None:
+                print()
+                print("MachLine Failed to Run.....      Skipping Iteration")
+                skips += 1
+                continue
+            
             ## Post processing of bump location and pressure data
             ffd_box.append([ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index])
-            xg,p = pressures(243.61, .00036392, 968.08, 1548.928, MACH, angles) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
+            xg,p = pressures(p_static, density, speed_of_sound, v_inf, MACH, angles) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
+
+            #^^  User input pressure inputs at top of function ^^#
             x_loc.append(xg)
             nearfield_sig.append(p)
 
-            #for n in range(len(points)/num_azimuth - 1)   ## loop through lines in pressure file....????
-            #   open sheet file 
-            #    for row in sheet
-            #      find and define one signature for angle
-            #    -----skip header
-            #   define azimuth angle associated with line
-            #   asign azimuth and run sBOOM
-            ### figure out how to accurately save each azimuth angle signature data
-            ### (header = [azimuth , [signature]] )
-
             ## Run sBOOM
-            g_sig, noise_level = boom(MACH, r_over_l, ref_length, altitude) #, N_points, angles) 
+            g_sig, noise_level = boom(MACH, r_over_l, ref_length, altitude, N_points, angles) 
             ground_sig.append(g_sig)
             loudness.append(noise_level)
 
-    print("Iteration: ", (i*j*k) + 1 , "/", lengths*origins*bumps)
+            iteration += 1
+            print()
+            print("Iteration: ", iteration, "/", lengths*origins*bumps)
+            print()
 
 print()
 print("Writing Test Case Data to Files....")
@@ -134,6 +140,7 @@ print()
 print("------------------------------------------")
 print("Test Case Executed Successfully!")
 print("Number of Bump Configurations: ", lengths*origins*bumps)
+print("Skipped Cases: ", skips)
 end_time = time.time()
 execution_time = end_time - start_time
 print("Execution Time: ", execution_time / 60 , " min")

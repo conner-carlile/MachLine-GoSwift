@@ -108,8 +108,8 @@ class SboomWrapper:
                                   ["input_humidity", 0],
                                   ["heading_angle", 0.],
                                   ["climb_angle", 0.],
-                                  ["output_format", 1],
-                                  ["input_xdim", 0],
+                                  ["output_format", 0],   ############
+                                  ["input_xdim", 1],
                                   ["adjoint", 0],
                                   ["objective", 4],
                                   ["acceleration", 0.],

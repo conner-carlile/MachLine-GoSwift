@@ -20,6 +20,31 @@ with open('studies/Goswift/results/temp_loudness.pkl', 'rb') as pickle_file:
 
 
 ## Find quietest configuration
+#set = 0
+#min = min(loudness)
+#max = max(loudness)
+#print("min: ", min)
+#print("max: ", max)
+#for i in range(len(loudness)):
+#    if loudness[i] == min:
+#        set = i
+#        print("i for lowest: ", i)
+#print(ffd_box)
+#
+#plt.plot( x_loc[set],nearfield_sig[set]) #x_loc[0:1000][set],   ??????????
+#plt.title("Nearfield Signature")
+#plt.ylabel("dP")
+#plt.xlabel("X (in)")
+#plt.show()
+#
+#
+#for i in range(len(loudness)):
+#    plt.plot(ground_sig[i][0][:,0],ground_sig[i][0][:,1]) #???????????
+#plt.title("Ground Signature")
+#plt.ylabel("dP/P")
+#plt.xlabel("X (in)")
+#plt.show()
+    
 set = 0
 min = min(loudness)
 max = max(loudness)
@@ -30,28 +55,37 @@ for i in range(len(loudness)):
         set = i
         print("i for lowest: ", i)
 
+fig, ax = plt.subplots(1,2, figsize = (14,4.5))
+
+#plt.plot( xg,p) #x_loc[0:1000][set],
+#plt.title("Nearfield Signature")
+#plt.ylabel("dP/P")
+#plt.xlabel("X (in)")
+#plt.show()
+print(x_loc[set])
+
+ax[0].plot(x_loc[set],nearfield_sig[set])
+ax[0].set_title("Nearfield Signature")
+ax[0].set_ylabel("dp/P")
+ax[0].set_xlabel("X (in)")
 
 
-plt.plot( x_loc[set],nearfield_sig[set]) #x_loc[0:1000][set],
-plt.title("Nearfield Signature")
-plt.ylabel("dP/P")
-plt.xlabel("X (ft)")
+for i in range(len(loudness)):
+#plt.plot(g_sig[0][:,0],g_sig[0][:,1])
+    ax[1].plot(ground_sig[i][0][:,0],ground_sig[i][0][:,1])
+ax[1].set_title("Ground Signature")
+ax[1].set_ylabel("dp (psf)")
+ax[1].set_xlabel("time (ms)")
+
 plt.show()
 
-#for i in range(len(loudness)):
-plt.plot(ground_sig[set][:,0]/12,ground_sig[set][:,1])
-plt.title("Ground Signature")
-plt.ylabel("dP/P")
-plt.xlabel("X (ft)")
-plt.show()
 
-
-loc = np.linspace(0,len(loudness),len(loudness))
-plt.plot(loc,loudness)
-plt.title("Loudness vs Iteration")
-plt.xlabel("Iteration")
-plt.ylabel("Loudness (db)")
-plt.show()
+#loc = np.linspace(0,len(loudness),len(loudness))
+#plt.plot(loc,loudness)
+#plt.title("Loudness vs Iteration")
+#plt.xlabel("Iteration")
+#plt.ylabel("Loudness (db)")
+#plt.show()
 
 
 x = []
@@ -59,33 +93,33 @@ for i in range(len(ffd_box)):
     x.append(ffd_box[i][1][0])
 
 
-plt.scatter(x,loudness)
-plt.title("Loudness vs location")
-plt.xlabel("Location Along Body (ft)")
-plt.ylabel("Loudness (db)")
-plt.show()
-
-
-y = []
-for i in range(len(ffd_box)):
-    y.append(ffd_box[i][0][0])
-
-plt.scatter(y,loudness)
-plt.title("Loudness vs Bump Length")
-plt.xlabel("Length")
-plt.ylabel("Loudness (db)")
-plt.show()
-
-
-z = []
-for i in range(len(ffd_box)):
-    z.append(ffd_box[i][3])
-
-plt.scatter(z,loudness)
-plt.title("Loudness vs Bump Shape")
-plt.xlabel("Delta-z")
-plt.ylabel("Loudness (db)")
-plt.show()
+#plt.scatter(x,loudness)
+#plt.title("Loudness vs location")
+#plt.xlabel("Location Along Body (ft)")
+#plt.ylabel("Loudness (db)")
+#plt.show()
+#
+#
+#y = []
+#for i in range(len(ffd_box)):
+#    y.append(ffd_box[i][0][0])
+#
+#plt.scatter(y,loudness)
+#plt.title("Loudness vs Bump Length")
+#plt.xlabel("Length")
+#plt.ylabel("Loudness (db)")
+#plt.show()
+#
+#
+#z = []
+#for i in range(len(ffd_box)):
+#    z.append(ffd_box[i][3])
+#
+#plt.scatter(z,loudness)
+#plt.title("Loudness vs Bump Shape")
+#plt.xlabel("Delta-z")
+#plt.ylabel("Loudness (db)")
+#plt.show()
 
 #plt.plot(x_loc[0], nearfield_sig[0])
 #plt.title("Nearfield Signature")
