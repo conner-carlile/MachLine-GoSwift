@@ -6,6 +6,7 @@ from stl import mesh
 from off_body import *
 from deform_tri_module import *
 from ambiance import Atmosphere
+import trimesh
 start_time = time.time()
 
 ## Input Parameters
@@ -14,13 +15,18 @@ input_file = "studies/GoSwift/input_files/test.json"
 input = json.loads(open(input_file).read())
 MACH = input["flow"]["freestream_mach_number"]
 
-N_points = 1000
-r_over_l = 3
-ref_length = 23 # 154 ft for N+2,  20 ft for SH
-altitude = 50000
+N_points = 2500
+r_over_l = 1.5#2.94 #2.3185
+ref_length = 22.27682 # 154 ft for N+2,  20 ft for SH
+#altitude = 50000
 #v_inf... = atm calcs
-p_static = 243.61
-density = .00036392
+#p_static = 243.61
+#density = .00036392
+#speed_of_sound = 968.08
+#v_inf = 1548.928
+altitude = 40000
+p_static = 393.13 #lbf/ft^2
+density = .00058728
 speed_of_sound = 968.08
 v_inf = 1548.928
 PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
@@ -40,7 +46,6 @@ loudness = []
 ## Import Undeformed Test Geometry
 baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
 baseline_tri = "studies/GoSwift/meshes/test_sw.tri"
-#stl_deformed = "studies/GoSwift/meshes/test_sw.stl"
 
 
 ## Create CSV file for off body points
@@ -50,6 +55,7 @@ minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
 angles = off_body_sheet(N_points, MACH, r_over_l, num_azimuth)  ### angle stuff
 
 length_body = maxx - minx
+width_body = maxy - miny
 
 ## Convert baseline .stl file to .tri file for FFD
 stl_to_tri(baseline_stl, baseline_tri)
@@ -62,13 +68,23 @@ delta_z = []
 delta_index = []
 
 ## Define initial FFD data for loop    
-ffd_lengths0 = (1,1,2)
-ffd_origin0 = (0,0,0)
+#ffd_lengths0 = (150,width_body,width_body)
+#ffd_origin0 = (65,0,-z_pos) #(0,0,0)
+#ffd_num_points = (3,3,3) # Constant?
+#ffd_delta_z0 = (0) 
+#ffd_delta_index = (1,1,1)  # Constant 
+
+ffd_lengths0 = (60,width_body,width_body)
+ffd_origin0 = (60,0,-z_pos)#(length_body/2 - 60/2,0,-z_pos) #(0,0,0)
 ffd_num_points = (3,3,3) # Constant?
 ffd_delta_z0 = (0) 
 ffd_delta_index = (1,1,1)  # Constant 
 
-#lengths, origins, bumps = (4,int(length_body),4)
+print("origin: ", ffd_origin0)
+print("length: ", length_body)
+print("width: ", maxy-miny)
+
+#lengths, origins, bumps = (10,int(length_body/12),4)
 lengths, origins, bumps = (1,1,1)
 #lengths, origins, bumps = (4, int(length_body - ffd_lengths0[0]), 4) ## moves along entire mesh keeping entire ffd box on mesh (not really true)
 "'####### Find a way to not check Zero deformation except for the first time #######'"
@@ -77,11 +93,18 @@ lengths, origins, bumps = (1,1,1)
 iteration = 0
 skips = 0
 for i in range(lengths):
-    ffd_lengths = (ffd_lengths0[0] + i, ffd_lengths0[1], ffd_lengths0[2])
+    ffd_lengths = (ffd_lengths0[0] + (i*43), ffd_lengths0[1], ffd_lengths0[2])
     for j in range(origins):
-        ffd_origin = (ffd_origin0[0] + j, ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
+        #ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
+        ffd_origin = (ffd_origin0[0] + (j*12), ffd_origin0[1], ffd_origin0[2])
         for k in range(bumps):
-            ffd_delta_z = (ffd_delta_z0 - (k/4))
+            ffd_delta_z = (ffd_delta_z0 - (k/5))
+
+            #print(ffd_lengths, ",", ffd_origin, ",", ffd_delta_z)
+
+            if ffd_lengths[0] > length_body - ffd_origin[0]:
+                skips += 1
+                continue
 
             ## Deform baseline mesh with new FFD box parameters
             vert_coords, tri_verts, comp_num = load_tri_mesh_points(baseline_tri)
@@ -103,7 +126,6 @@ for i in range(lengths):
             ffd_box.append([ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index])
             xg,p = pressures(p_static, density, speed_of_sound, v_inf, MACH, angles) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
 
-            #^^  User input pressure inputs at top of function ^^#
             x_loc.append(xg)
             nearfield_sig.append(p)
 

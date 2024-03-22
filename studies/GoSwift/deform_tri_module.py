@@ -53,7 +53,7 @@ def deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd
     
     if vtk_box_flag == True:
         control_points = ffd.control_points()
-        print("control points:", control_points)
+        #print("control points:", control_points)
         #fig = plt.figure(100)
         #ax = fig.add_subplot(111, projection='3d')
         #ax.scatter(control_points[0], control_points[1], control_points[2], s=50, c='red')
@@ -283,15 +283,22 @@ def write_tecplot_delta_z_file(new_filename, deformed_mesh_points, delta_mesh_po
 
 if __name__ == "__main__":
     #location of undeformed geometry .tri file
-    file = "studies/GoSwift/meshes/pod.tri"
+    file = "studies/GoSwift/meshes/test_sw.tri"
 
     #Define ffd box parameters
-    ffd_lengths = (1,1,2)
-    ffd_origin = (0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    #[(12, 32.67716, 32.67716), (25, -16.338579177856445, -48.983498), (3, 3, 3), -1.25, (1, 1, 1)]
+    #(12, 32.67716, 32.67716) , (24, 0, -16.30634) , -0.25
+#[(24, 32.66058, 32.66058), (36, 0, -16.33746), (3, 3, 3), -0.25, (1, 1, 1)]
+    #[(12, 32.66058, 32.66058), (58, 0, -16.33746), (3, 3, 3), -0.25, (1, 1, 1)]
+    #[(5, 2.722535, 2.722535), (8.638409614562988, 0, -1.361479), (3, 3, 3), 0.5, (1, 1, 1)]
+    origin:  (58, 0, -16.3376)
+    length:  267.3218
+    width:  32.66504
+    ffd_lengths = (5, 2.722535, 2.722535)
+    ffd_origin = (8.63841, 0, -1.36126)#(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
     ffd_num_points = (3,3,3) ## I keep this constant
-    ffd_delta_z = -2  ## I place the bump on the bottom of the geometry and "squish the box" instead of pull, thats why the delta z is negative
+    ffd_delta_z = -1.5  ## I place the bump on the bottom of the geometry and "squish the box" instead of pull, thats why the delta z is negative
     ffd_delta_index = (1,1,1)   #Any other vector 
-
 
 
     vert_coords, tri_verts, comp_num = load_tri_mesh_points(file)
@@ -301,37 +308,32 @@ if __name__ == "__main__":
     ## The following is only to plot the original and deformed geometries and does not effect results
 
     ##original mesh
-    #print(vert_coords)
-    #fig = plt.figure()
-    #ax = fig.add_subplot(111, projection='3d')
-    ##fig.tight_layout()
-    #x = vert_coords[:,0]
-    #y = vert_coords[:,1]
-    #z = vert_coords[:,2]
-    #ax.scatter(x,y,z)
-
-    ##deformed mesh
-    #a = deformed_mesh_points[:,0]
-    #b = deformed_mesh_points[:,1]
-    #c = deformed_mesh_points[:,2]
-    #ax.scatter(a,b,c)
+    print(vert_coords)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
     #fig.tight_layout()
-
-
-    #ax.set_xlabel("X")
-    #ax.set_ylabel("Y")
-    #ax.set_zlabel("Z")
-    #ax.set_aspect("equal")
-
-    ## plot ffd box corners
-    #ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
-    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
-    #ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
-    #ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
-    #ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-
-    #plt.show()
-            
+    x = vert_coords[:,0]
+    y = vert_coords[:,1]
+    z = vert_coords[:,2]
+    ax.scatter(x,y,z)
+    #deformed mesh
+    a = deformed_mesh_points[:,0]
+    b = deformed_mesh_points[:,1]
+    c = deformed_mesh_points[:,2]
+    ax.scatter(a,b,c)
+    fig.tight_layout()
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.set_aspect("equal")
+    # plot ffd box corners
+    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    plt.show()
+           

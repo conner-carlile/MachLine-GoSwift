@@ -6,7 +6,7 @@
     },
     "geometry": {
         "file": "studies/GoSwift/meshes/test_deformed.tri",
-        "spanwise_axis": "+y",
+        "spanwise_axis": "-y",
         "wake_model": {
             "wake_present" : false,
             "append_wake" : false,

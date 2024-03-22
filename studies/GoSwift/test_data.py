@@ -1,6 +1,8 @@
 import pickle
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
 
 ## Open pickle files
 with open('studies/Goswift/results/temp_ffd_box.pkl', 'rb') as pickle_file:
@@ -44,7 +46,8 @@ with open('studies/Goswift/results/temp_loudness.pkl', 'rb') as pickle_file:
 #plt.ylabel("dP/P")
 #plt.xlabel("X (in)")
 #plt.show()
-    
+
+print(ffd_box)
 set = 0
 min = min(loudness)
 max = max(loudness)
@@ -55,44 +58,113 @@ for i in range(len(loudness)):
         set = i
         print("i for lowest: ", i)
 
-fig, ax = plt.subplots(1,2, figsize = (14,4.5))
-
+#fig, ax = plt.subplots(1,2, figsize = (14,4.5))
+#print(ffd_box[-1])
 #plt.plot( xg,p) #x_loc[0:1000][set],
 #plt.title("Nearfield Signature")
 #plt.ylabel("dP/P")
 #plt.xlabel("X (in)")
 #plt.show()
-print(x_loc[set])
+#print(x_loc[set])
+#print(len(nearfield_sig))
+#plt.plot(x_loc[0],nearfield_sig[0])
+#plt.plot(x_loc[0],nearfield_sig[1])
+#plt.title("Nearfield Signature")
+#plt.ylabel("dp / P")
+#plt.xlabel("X (in)")
 
-ax[0].plot(x_loc[set],nearfield_sig[set])
-ax[0].set_title("Nearfield Signature")
-ax[0].set_ylabel("dp/P")
-ax[0].set_xlabel("X (in)")
-
-
-for i in range(len(loudness)):
-#plt.plot(g_sig[0][:,0],g_sig[0][:,1])
-    ax[1].plot(ground_sig[i][0][:,0],ground_sig[i][0][:,1])
-ax[1].set_title("Ground Signature")
-ax[1].set_ylabel("dp (psf)")
-ax[1].set_xlabel("time (ms)")
-
-plt.show()
-
-
-#loc = np.linspace(0,len(loudness),len(loudness))
-#plt.plot(loc,loudness)
-#plt.title("Loudness vs Iteration")
-#plt.xlabel("Iteration")
-#plt.ylabel("Loudness (db)")
+#!!!!!!!!!!!!
+#ax[0].plot(x_loc[0],nearfield_sig[0])
+#ax[0].set_title("Nearfield Signature")
+#ax[0].set_ylabel("dp / P")
+#ax[0].set_xlabel("X (in)")
+##ax[0].set_ylim(-0.1,0.15, 0.5)
+#
+##plt.show()
+#
+#
+#for i in range(len(loudness)):
+##plt.plot(g_sig[0][:,0],g_sig[0][:,1])
+#    ax[1].plot(ground_sig[i][0][:,0],ground_sig[i][0][:,1])
+#    #plt.plot(ground_sig[i][0][:,0],ground_sig[i][0][:,1])
+#    #plt.show()
+#ax[1].set_title("Ground Signature")
+#ax[1].set_ylabel("dp (psf)")
+#ax[1].set_xlabel("time (ms)")
+#
 #plt.show()
+#!!!!!!!!!!!!!!!
 
 
-x = []
-for i in range(len(ffd_box)):
-    x.append(ffd_box[i][1][0])
+#Smooth Data
+#y = nearfield_sig[0]
+#yhat = savgol_filter(y, 50, 3)
+#yhat[400:len(nearfield_sig[0])] = savgol_filter(y[400:len(nearfield_sig[0])], 200, 3)
+        
+
+y = nearfield_sig[0]
+
+#print(y)
+
+# Apply Savitzky-Golay filter with a 50 window to the entire data set
+yhat = savgol_filter(y, 50, 3)
+
+x_values = np.array(x_loc[0])  # Convert x_loc[0] to a numpy array
+
+start_x = 400
+end_x = 450
+
+# Find the indices corresponding to the range on the x-axis
+start_idx = np.argmax(x_values >= start_x)
+end_idx = np.argmax(x_values >= end_x)
+
+print(len(y))
+# Apply Savitzky-Golay filter with a 200 window to the specified range
+#yhat[950:1000] = savgol_filter(y[950:1000], 50, 1)
 
 
+#with open('studies/Goswift/results/pod_raw_2.94_bodys.csv','w') as file:
+#    writer = csv.writer(file)
+#    writer.writerow(["x location (in), Pressure (dp/p)"])
+#    writer.writerows(zip(x_loc[0],y))
+#
+#with open('studies/Goswift/results/pod_smoothed_2.94_bodys.csv','w',newline='') as file:
+#    writer = csv.writer(file)
+#    writer.writerow(["x location (in), Pressure (dp/p)"])
+#    writer.writerows(zip(x_loc[0],yhat))
+#
+#with open('studies/Goswift/results/pressure.csv','w',newline='') as file:
+#    writer = csv.writer(file)
+#    writer.writerow(["Pressure (dp/p)"])
+#    for row in yhat:
+#        writer.writerow([row])
+
+
+#for i in range(len(nearfield_sig)):
+#plt.plot(x_loc[0],y)
+plt.plot(x_loc[0],yhat)
+plt.xlim(900,1450)
+#plt.legend(["Raw Data", "Smoothed Data"])
+#plt.ylim(-.1, .15)
+plt.title("Nearfield Signature")
+plt.ylabel("dp / P")
+plt.xlabel("X (in)")
+plt.show()
+#
+#
+##loc = np.linspace(0,len(loudness),len(loudness))
+##plt.plot(loc,loudness)
+##plt.title("Loudness vs Iteration")
+##plt.xlabel("Iteration")
+##plt.ylabel("Loudness (db)")
+##plt.show()
+#
+#
+#x = []
+#for i in range(len(ffd_box)):
+#    x.append(ffd_box[i][1][0])
+#
+#
 #plt.scatter(x,loudness)
 #plt.title("Loudness vs location")
 #plt.xlabel("Location Along Body (ft)")
@@ -120,15 +192,14 @@ for i in range(len(ffd_box)):
 #plt.xlabel("Delta-z")
 #plt.ylabel("Loudness (db)")
 #plt.show()
-
 #plt.plot(x_loc[0], nearfield_sig[0])
 #plt.title("Nearfield Signature")
 #plt.ylabel("dP/P")
 #plt.xlabel("X (ft)")
 #plt.show()
 #
-#plt.plot(ground_sig[0][:,0],ground_sig[0][:,1])
-#plt.title("Ground Signature")
-#plt.ylabel("dP/P")
-#plt.xlabel("X (ft)")
-#plt.show()
+##plt.plot(ground_sig[0][:,0],ground_sig[0][:,1])
+##plt.title("Ground Signature")
+##plt.ylabel("dP/P")
+##plt.xlabel("X (ft)")
+##plt.show()

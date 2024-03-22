@@ -15,7 +15,7 @@ import pyldb
 def find_mins(obj):
     """ Reads in stl mesh file and finds first (x,y,z) point for centerline and length calcs"""
 
-    global minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos
+    global minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos, width_body
     minx = obj.x.min()
     maxx = obj.x.max()
     miny = obj.y.min()
@@ -31,6 +31,8 @@ def find_mins(obj):
             y_pos = y
             z_pos = z
     #print("length", maxx - minx)
+    width_body = maxy - miny
+    #z_pos = z_pos - width_body ##!!!!!!!!! delete later
     return minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos
 
 ## keep new y and z just shift x over outside mach cone *****????
@@ -38,9 +40,10 @@ def off_body(N_points,M_number,body_lengths):
     """ Defines and creates csv file of desired off body points"""
     global x0, x, xf,y, L, points
     x_start = minx
+    
     xf = maxx
     #y = (miny + maxy)/2   
-    y = y_pos       ########### correct center
+    y = y_pos      ########### correct center
 
     #z = minz
     z = z_pos ############ correct center
@@ -72,12 +75,12 @@ def off_body(N_points,M_number,body_lengths):
         x += ds
 
 
-    with open('studies/Goswift/off_body/off_body.csv','w') as csvfile:
+    with open('studies/Goswift/off_body/off_body_sheet.csv','w') as csvfile:
        writer = csv.writer(csvfile)
-       writer.writerow(["points"])
+       writer.writerow(["x, y, z"])
        for row in points:
            writer.writerow(row)
-
+    print("z_pos:", z_pos)
     return x0, x, xf,y, L, points
 
 
@@ -95,29 +98,40 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
  
     with open('studies/Goswift/off_body/off_body_sheet.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["points"])
+        writer.writerow(["x,","y,","z"]) ## messes up the csv file when reading in
 
         for i in range(len(angles)):
             x_start = minx
+            print("x_start: ", x_start)
             xf = maxx
             y = y_pos  # correct center
+            print("y_pos: ", y_pos)
             z = z_pos  # correct center
 
             L = xf - x_start  # length of geometry
-            Lu = L + (L / 2)  # length of csv line
+            #Lu = L + (L / 2)  # length of csv line   #!!!!! pod_ensure
 
             R = L * body_lengths  # how far away from the body
-            ds = Lu / N_points
+            #ds = Lu / N_points #!!!!! undo pod_ensure
             #zo = z - R * np.sin((angles[i] - 90) * np.pi / 180)
-            zo = (-R) * np.sin((angles[i]) * np.pi / 180)
+            zo = (-R) * np.sin((angles[i]) * np.pi / 180) +(1.837082861*12) ##!!!!!!!! change back   pod_ensure
+            print("zo: ", zo)
 
 
             # define x start and end location with mach cone offset
             mu = np.arcsin(1 / M_number)
-            x0 = R / np.tan(mu)  # will stay constant for all angles
-            
+
+            #x0 = R / np.tan(mu)  # will stay constant for all angles   pod_ensure
+
+            offset = R / np.tan(mu) ###!!!!!!!
+            x0 = x_start + 3.74 ########!!!!!!!!!!! Change back^^^
+            Lu = L + (L/2) + offset
+            ds = Lu / N_points   #####^^^^ pod_ensure
+
+            print("x0 (trig)", x0)
             #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
-            y0 = (R) * np.cos((angles[i]) * np.pi / 180)
+            y0 = (R) * np.cos((angles[i]) * np.pi / 180) + width_body/2
+            print("y0 (trig)", y0)
 
 
             # define (x, y, z) locations for off-body control points
@@ -198,8 +212,7 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
     for i in range(len(angles)):   #### added this.......
         for j in range(len(points)):  ## - 1
         #xg.append((points[i][0] - x0)/L)  #!
-            xg.append((points[j][0]-x0)*12) #*12
-    print("xg: ",xg)
+            xg.append((points[j][0]))##-x0)) #*12 !!!!!!!!! add back in
     #print("x: ", xg)
 
 #========================= working old pressure calcs ===========================================
@@ -310,11 +323,11 @@ def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):  ## add azim
                     propagation_start=PROP_R,
                     altitude_stop=0,
                     output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
-                    input_xdim=1,       ## 1 = inches, 0 = ft
+                    input_xdim=0,       ## 1 = inches, 0 = ft
                     num_azimuthal = 1,
                     azimuthal_angles = angle,
-                    propagation_points=40000,
-                    padding_points=8000)
+                    propagation_points=4000, #add zero
+                    padding_points=800)
 
         _sboom.set(signature=sig, input_format=0) # set input signature and format
         sboom_results = _sboom.run(atmosphere_input=None) # run sBOOOM
@@ -400,26 +413,97 @@ def _write_TRI(n_verts, n_tris, vertices, tri_verts, comp_num, tri_filename):
 #        stl_file.write("endsolid\n")
 
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
+
+    input_file = "studies/GoSwift/input_files/test.json"
+    baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
+
+    input_file = "studies/GoSwift/input_files/test.json"
+
+    input = json.loads(open(input_file).read())
+    Mach = input["flow"]["freestream_mach_number"]
+
+    N_points = 1000
+    r_over_l = 2.318594
+    ref_length = 22.27682 # 154 ft for N+2,  20 ft for SH
+    altitude = 40000
+    p_static = 393.13 #lbf/ft^2
+    density = .00058728
+    speed_of_sound = 968.08
+    v_inf = 1548.928
+    PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
+    num_azimuth = 0
+
+    body_mesh = mesh.Mesh.from_file(baseline_stl)
+    minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
+    x0, x, xf,y, L, points = off_body(N_points, Mach, r_over_l)
+    print("L: ", L)
+    #off_body(N_points,Mach,r_over_l)
+    angles = off_body_sheet(N_points, Mach, r_over_l, num_azimuth)
+
+    #xg,p = pressures(243.61, .00036392, 968.08, 1548.928, Mach ) 
+
+    print(angles)
+
+
+
+
 #
-#    input_file = "studies/GoSwift/input_files/test.json"
-#    baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
+#    global x0, x, xf, y, L, points
 #
-#    input = json.loads(open(input_file).read())
-#    Mach = input["flow"]["freestream_mach_number"]
-#    N_points = 1000
-#    r_over_l = 3
-#    ref_length = 20 # 154 ft for N+2,  20 ft for SH
-#    altitude = 50000
-#    PROP_R = r_over_l*ref_length
+#    # Define azimuth angles
+#    delta_phi = 90 / (num_azimuth + 1)
 #
-#    body_mesh = mesh.Mesh.from_file(baseline_stl)
-#    minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
-#    x0, x, xf,y, L, points = off_body(N_points, Mach, r_over_l)
-#    print("L: ", L)
-#    #off_body(N_points,Mach,r_over_l)
-#    angles = off_body_sheet(N_points, Mach, r_over_l, 1)
+#    print("delta phi: ",delta_phi)
+#    angles = []
+#    for i in range((num_azimuth * 2) + 1):
+#        angles.append(delta_phi * (i + 1))
+# 
+#    with open('studies/Goswift/off_body/off_body_sheet.csv', 'w', newline='') as csvfile:
+#        writer = csv.writer(csvfile)
+#        writer.writerow(["x, y, z"]) ## messes up the csv file when reading in
 #
-#    xg,p = pressures(243.61, .00036392, 968.08, 1548.928, Mach ) 
+#        for i in range(len(angles)):
+#            x_start = minx
+#            print("x_start: ", x_start)
+#            xf = maxx
+#            y = y_pos  # correct center
+#            print("y_pos: ", y_pos)
+#            z = z_pos  # correct center
 #
-#    print(angles)
+#            L = xf - x_start  # length of geometry
+#            Lu = L + (L / 2)  # length of csv line
+#
+#            R = L * body_lengths  # how far away from the body
+#            ds = Lu / N_points
+#            #zo = z - R * np.sin((angles[i] - 90) * np.pi / 180)
+#            zo = (-R) * np.sin((angles[i]) * np.pi / 180)
+#
+#
+#            # define x start and end location with mach cone offset
+#            mu = np.arcsin(1 / M_number)
+#
+#            x0 = R / np.tan(mu)  # will stay constant for all angles
+#            
+#            print("x0 (trig)", x0)
+#            #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
+#            y0 = (R) * np.cos((angles[i]) * np.pi / 180) + width_body/2
+#            print("y0 (trig)", y0)
+#
+#
+#            # define (x, y, z) locations for off-body control points
+#            # assuming x is the streamwise direction
+#            x = x0
+#            points = np.zeros((N_points, 3), dtype=float)
+#
+#            for j in range(N_points): #+ 1
+#                points[j][0] = x
+#                points[j][1] = y0
+#                points[j][2] = zo
+#                x += ds
+#                
+#                # Write each point to the CSV file
+#                writer.writerow(points[j])
+#   
+#    return angles
+#

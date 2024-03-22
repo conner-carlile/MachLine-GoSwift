@@ -74,7 +74,11 @@ fig, ax = plt.subplots(1,2, figsize = (14,4.5))
 #plt.ylabel("dP/P")
 #plt.xlabel("X (in)")
 #plt.show()
-print(g_sig)
+#print(g_sig)
+
+## artifitially turns nearfield x dim to inches ##
+for i in range(len(xg)):
+    xg[i] = ((xg[i])/12)
 
 ax[0].plot(xg,p)
 ax[0].set_title("Nearfield Signature")
