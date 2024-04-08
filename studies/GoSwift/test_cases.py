@@ -15,9 +15,9 @@ input_file = "studies/GoSwift/input_files/test.json"
 input = json.loads(open(input_file).read())
 MACH = input["flow"]["freestream_mach_number"]
 
-N_points = 2500
-r_over_l = 1.5#2.94 #2.3185
-ref_length = 22.27682 # 154 ft for N+2,  20 ft for SH
+N_points = 3000 # @ 1 F-15 body length
+r_over_l = 1.5 #2.94 #2.3185
+ref_length = 21.6533 # 154 ft for N+2,  20 ft for SH
 #altitude = 50000
 #v_inf... = atm calcs
 #p_static = 243.61
@@ -60,6 +60,7 @@ width_body = maxy - miny
 ## Convert baseline .stl file to .tri file for FFD
 stl_to_tri(baseline_stl, baseline_tri)
 
+
 ## Initialize FFD box info lists
 length = []
 origin = []
@@ -74,11 +75,20 @@ delta_index = []
 #ffd_delta_z0 = (0) 
 #ffd_delta_index = (1,1,1)  # Constant 
 
-ffd_lengths0 = (60,width_body,width_body)
-ffd_origin0 = (60,0,-z_pos)#(length_body/2 - 60/2,0,-z_pos) #(0,0,0)
-ffd_num_points = (3,3,3) # Constant?
-ffd_delta_z0 = (0) 
-ffd_delta_index = (1,1,1)  # Constant 
+### pod by itself
+#ffd_lengths0 = (60,width_body,width_body)
+#ffd_origin0 = (60,0,-z_pos)#(length_body/2 - 60/2,0,-z_pos) #(0,0,0)
+#ffd_num_points = (3,3,3) # Constant?
+#ffd_delta_z0 = (0) 
+#ffd_delta_index = (1,1,1)  # Constant 
+
+#ffd_lengths0 = (1117.6, 415.036, 415.036)
+ffd_lengths0 = (1,1,1)
+#ffd_origin0 = (5941.16668, -207.018, -1250.0356)#(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+ffd_origin0 = (0,0,0)#(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+ffd_num_points = (3,3,1) ## I keep this constant
+ffd_delta_z0 = (0)  ## change ffd_deltz_z to ensure correct step size
+ffd_delta_index = (1,1,1)
 
 print("origin: ", ffd_origin0)
 print("length: ", length_body)
@@ -98,13 +108,15 @@ for i in range(lengths):
         #ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
         ffd_origin = (ffd_origin0[0] + (j*12), ffd_origin0[1], ffd_origin0[2])
         for k in range(bumps):
-            ffd_delta_z = (ffd_delta_z0 - (k/5))
+            ffd_delta_z = (ffd_delta_z0 + (k*.75)) #####!!!!!!!!
 
             #print(ffd_lengths, ",", ffd_origin, ",", ffd_delta_z)
-
+            
             if ffd_lengths[0] > length_body - ffd_origin[0]:
                 skips += 1
+                print("box location and/or size is too big to fit on the body")
                 continue
+            
 
             ## Deform baseline mesh with new FFD box parameters
             vert_coords, tri_verts, comp_num = load_tri_mesh_points(baseline_tri)

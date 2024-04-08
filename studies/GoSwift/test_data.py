@@ -3,10 +3,12 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
+from exponentalSmoothing import exponential_smoothing
 
 ## Open pickle files
 with open('studies/Goswift/results/temp_ffd_box.pkl', 'rb') as pickle_file:
     ffd_box = pickle.load(pickle_file)
+print(ffd_box)
 
 with open('studies/Goswift/results/temp_x_loc.pkl', 'rb') as pickle_file:
     x_loc = pickle.load(pickle_file)
@@ -103,52 +105,59 @@ for i in range(len(loudness)):
         
 
 y = nearfield_sig[0]
+#z = nearfield_sig[1]
 
 #print(y)
 
 # Apply Savitzky-Golay filter with a 50 window to the entire data set
-yhat = savgol_filter(y, 50, 3)
+yhat = savgol_filter(y, 250, 3)
+#zhat = savgol_filter(z, 100, 3)
 
 x_values = np.array(x_loc[0])  # Convert x_loc[0] to a numpy array
 
-start_x = 400
-end_x = 450
-
-# Find the indices corresponding to the range on the x-axis
-start_idx = np.argmax(x_values >= start_x)
-end_idx = np.argmax(x_values >= end_x)
+yprime = exponential_smoothing(y, 0.1)
+#zprime = exponential_smoothing(z, 0.1)
 
 print(len(y))
 # Apply Savitzky-Golay filter with a 200 window to the specified range
 #yhat[950:1000] = savgol_filter(y[950:1000], 50, 1)
 
 
-#with open('studies/Goswift/results/pod_raw_2.94_bodys.csv','w') as file:
+#with open('studies/Goswift/results/pod_and_wedge_raw_1_F15_bodys.csv','w',newline='') as file:
 #    writer = csv.writer(file)
 #    writer.writerow(["x location (in), Pressure (dp/p)"])
 #    writer.writerows(zip(x_loc[0],y))
 #
-#with open('studies/Goswift/results/pod_smoothed_2.94_bodys.csv','w',newline='') as file:
+#with open('studies/Goswift/results/pod_and_wedge_sav_gol_filter_1_f_15_bodys.csv','w',newline='') as file:
 #    writer = csv.writer(file)
-#    writer.writerow(["x location (in), Pressure (dp/p)"])
+#    writer.writerow(["x location (mm), Pressure (dp/p)"])
 #    writer.writerows(zip(x_loc[0],yhat))
 #
-#with open('studies/Goswift/results/pressure.csv','w',newline='') as file:
+#with open('studies/Goswift/results/pod_and_wedge_exponential_filter_1_f_15_bodys.csv','w',newline='') as file:
 #    writer = csv.writer(file)
-#    writer.writerow(["Pressure (dp/p)"])
-#    for row in yhat:
-#        writer.writerow([row])
+#    writer.writerow(["x location (mm), Pressure (dp/p)"])
+#    writer.writerows(zip(x_loc[0],yprime))
+
+##with open('studies/Goswift/results/pressure.csv','w',newline='') as file:
+##    writer = csv.writer(file)
+##    writer.writerow(["Pressure (dp/p)"])
+##    for row in yhat:
+##        writer.writerow([row])
 
 
 #for i in range(len(nearfield_sig)):
-#plt.plot(x_loc[0],y)
+plt.plot(x_loc[0],y)
+#plt.plot(x_loc[0],z)
+#plt.plot(x_loc[0], yprime)
 plt.plot(x_loc[0],yhat)
-plt.xlim(900,1450)
-#plt.legend(["Raw Data", "Smoothed Data"])
+#plt.plot(x_loc[0],zhat)
+#plt.xlim(20000,42500)
+#plt.legend(["Raw Data", "Exponential Smoothing", "Savitzky-Golay Filter"])
+plt.legend(["Raw Data", "Savitzky-Golay Filter"])
 #plt.ylim(-.1, .15)
 plt.title("Nearfield Signature")
 plt.ylabel("dp / P")
-plt.xlabel("X (in)")
+plt.xlabel("X (mm)")
 plt.show()
 #
 #

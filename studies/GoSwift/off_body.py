@@ -28,8 +28,10 @@ def find_mins(obj):
     for row in verts:
         x,y,z = row
         if x == minx:
-            y_pos = y
-            z_pos = z
+            #y_pos = y
+            y_pos = (maxy + miny)/2
+            #z_pos = z
+            z_pos = (maxz + minz)/2
     #print("length", maxx - minx)
     width_body = maxy - miny
     #z_pos = z_pos - width_body ##!!!!!!!!! delete later
@@ -114,7 +116,7 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
             R = L * body_lengths  # how far away from the body
             #ds = Lu / N_points #!!!!! undo pod_ensure
             #zo = z - R * np.sin((angles[i] - 90) * np.pi / 180)
-            zo = (-R) * np.sin((angles[i]) * np.pi / 180) +(1.837082861*12) ##!!!!!!!! change back   pod_ensure
+            zo = (-R) * np.sin((angles[i]) * np.pi / 180)# +(1.837082861*12) ##!!!!!!!! change back   pod_ensure
             print("zo: ", zo)
 
 
@@ -124,13 +126,14 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
             #x0 = R / np.tan(mu)  # will stay constant for all angles   pod_ensure
 
             offset = R / np.tan(mu) ###!!!!!!!
-            x0 = x_start + 3.74 ########!!!!!!!!!!! Change back^^^
+            x0 = x_start #+ 3.74 ########!!!!!!!!!!! Change back^^^ for just pod_ensure
+
             Lu = L + (L/2) + offset
             ds = Lu / N_points   #####^^^^ pod_ensure
 
             print("x0 (trig)", x0)
             #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
-            y0 = (R) * np.cos((angles[i]) * np.pi / 180) + width_body/2
+            y0 = (R) * np.cos((angles[i]) * np.pi / 180)# + width_body/2 #!!!!!!! pod ensure
             print("y0 (trig)", y0)
 
 
@@ -187,7 +190,7 @@ def run_machline(input_filename, delete_output=True, run=True):
     return report
 ################################################################################################
 
-def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
+def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles, points): ## delete points
     """ Calculates pressures from MachLine Calculated Velocities """
 
     c = speed_of_sound
@@ -209,8 +212,9 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
     p = []
     xg = []
 
-    for i in range(len(angles)):   #### added this.......
-        for j in range(len(points)):  ## - 1
+    #for i in range(len(angles)):   #### added this....... ### Change back
+    for i in range(1):  ## - 1
+        for j in range(len(points)):  ## - 1 ## points >> angles
         #xg.append((points[i][0] - x0)/L)  #!
             xg.append((points[j][0]))##-x0)) #*12 !!!!!!!!! add back in
     #print("x: ", xg)
@@ -223,7 +227,7 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles):
             pl = ( po_inf/(1 + ((gamma-1)/2)*(M)**2)**(gamma/(gamma-1)) )
             p.append (((pl-p_static)/p_static))
     
-    with open('studies/Goswift/results/off_body_pressure.csv','w') as file:
+    with open('studies/Goswift/results/off_body_pressure.csv','w',newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["x_loc, Pressure"])
         writer.writerows(zip(xg,p))

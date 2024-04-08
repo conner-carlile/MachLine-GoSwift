@@ -37,7 +37,8 @@ def deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd
         min(max(ffd_delta_index[2], 0), numz - 1)
         )
     
-    z_deform[valid_indices[0], valid_indices[1], valid_indices[2]] = ffd_delta_z    #***************************************
+    z_deform[valid_indices[0], valid_indices[1], valid_indices[2]] = ffd_delta_z    
+    #***************************************
     #z_deform[ffd_delta_index[0],ffd_delta_index[1],ffd_delta_index[2]] = ffd_delta_z
     
     ffd.box_length = ffd_lengths
@@ -291,13 +292,13 @@ if __name__ == "__main__":
 #[(24, 32.66058, 32.66058), (36, 0, -16.33746), (3, 3, 3), -0.25, (1, 1, 1)]
     #[(12, 32.66058, 32.66058), (58, 0, -16.33746), (3, 3, 3), -0.25, (1, 1, 1)]
     #[(5, 2.722535, 2.722535), (8.638409614562988, 0, -1.361479), (3, 3, 3), 0.5, (1, 1, 1)]
-    origin:  (58, 0, -16.3376)
+    origin:  (5941.16668, 0, 1250.0356)
     length:  267.3218
     width:  32.66504
-    ffd_lengths = (5, 2.722535, 2.722535)
-    ffd_origin = (8.63841, 0, -1.36126)#(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    ffd_lengths = (1117.6, 830.072, 830.072/2)
+    ffd_origin = (5941.16668, -(207.018*2), -1420.0356)# -1250.0356    (0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
     ffd_num_points = (3,3,3) ## I keep this constant
-    ffd_delta_z = -1.5  ## I place the bump on the bottom of the geometry and "squish the box" instead of pull, thats why the delta z is negative
+    ffd_delta_z = -1.5 ## I place the bump on the bottom of the geometry and "squish the box" instead of pull, thats why the delta z is negative
     ffd_delta_index = (1,1,1)   #Any other vector 
 
 
@@ -335,5 +336,5 @@ if __name__ == "__main__":
     ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    plt.show()
+    #plt.show()
            
