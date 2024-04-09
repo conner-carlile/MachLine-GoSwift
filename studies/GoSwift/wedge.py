@@ -13,7 +13,8 @@ input_file = "studies/GoSwift/input_files/test.json"
 input = json.loads(open(input_file).read())
 MACH = input["flow"]["freestream_mach_number"]
 
-N_points = [1200, 1400, 1800, 2700, 3500] # starting number of points
+#N_points = [1200, 1400, 1800, 2700, 3500] # starting number of points
+N_points = [3500, 3500, 3500, 3500, 3500]
 r_over_l = [.25, .5, 1, 2, 3] 
 
 ref_length = 13000 #mm 
@@ -94,10 +95,13 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
 
             #x0 = R / np.tan(mu)  # will stay constant for all angles   pod_ensure
 
-            offset = R / np.tan(mu) ###!!!!!!!
+            #offset = R / np.tan(mu) ###!!!!!!!
+            offset = 48710.9843875075
             x0 = x_start #+ 3.74 ########!!!!!!!!!!! Change back^^^ for just pod_ensure
 
             Lu = L + (L/2) + offset
+
+            print("offset: ", offset)
             ds = Lu / N_points[i]   #####^^^^ pod_ensure
 
             #print("x0 (trig)", x0)
@@ -167,7 +171,23 @@ xg,p = pressures(p_static, density, speed_of_sound, v_inf, MACH, angles,points) 
 #for i in range(len(N_points)):
 phat = savgol_filter(p, 100, 3)
 #plt.plot(x[start_index:end_index+1], [yi - subtract_value for yi in y[start_index:end_index+1]])
-print(p)
+
+x_new = [xg,xg,xg,xg,xg]
+
+#with open('studies/Goswift/results/wedge_off_body.csv','w',newline='') as file:
+#    writer = csv.writer(file)
+#    writer.writerow(["pressure"])
+#    for item in phat:
+#        writer.writerow((item))
+
+pressure = np.array(phat)
+np.savetxt("studies/Goswift/results/wedge_off_body_p.csv", pressure, delimiter=",")
+
+print(len(x_new))
+print(len(phat))
+print("!!!!!!!!!!!")
+
+
 fig, axs = plt.subplots(figsize=(8, 6))
 x = np.linspace(0, 1, len(phat))
 plt.plot(x,phat)
@@ -182,11 +202,18 @@ x4 = xg[0:N_points[3]]
 x5 = xg[0:N_points[4]]
 
 
-y1 = [y-0.3250 for y in phat[0:N_points[0]]]
-y2 = [i-0.6500 for i in phat[N_points[0]+1:N_points[1]+N_points[0]+1]]
-y3 = [j-.93000 for j in phat[N_points[0]+N_points[1]+1+1:N_points[2]+N_points[1]+N_points[0]+1+1]]
-y4 = [k-1.26000 for k in phat[N_points[2]+N_points[1]+N_points[0]+1+1:N_points[3]+N_points[2]+N_points[1]+N_points[0]+1+1]]
-y5 = [c-1.539000 for c in phat[N_points[3]+N_points[2]+N_points[1]+N_points[0]:N_points[4]+N_points[3]+N_points[2]+N_points[1]+N_points[0]+1]]
+#y1 = [y-0.3250 for y in phat[0:N_points[0]]]
+#y2 = [i-0.6500 for i in phat[N_points[0]+1:N_points[1]+N_points[0]+1]]
+#y3 = [j-.93000 for j in phat[N_points[0]+N_points[1]+1+1:N_points[2]+N_points[1]+N_points[0]+1+1]]
+#y4 = [k-1.26000 for k in phat[N_points[2]+N_points[1]+N_points[0]+1+1:N_points[3]+N_points[2]+N_points[1]+N_points[0]+1+1]]
+#y5 = [c-1.539000 for c in phat[N_points[3]+N_points[2]+N_points[1]+N_points[0]:N_points[4]+N_points[3]+N_points[2]+N_points[1]+N_points[0]+1]]
+y1 = [y - 0.3250 for y in phat[0:N_points[0]]]
+y2 = [i - 0.6500 for i in phat[N_points[0]+1:N_points[0]+N_points[1]+1]]
+y3 = [j - 0.93000 for j in phat[N_points[0]+N_points[1]+2:N_points[0]+N_points[1]+N_points[2]+2]]
+y4 = [k - 1.26000 for k in phat[N_points[0]+N_points[1]+N_points[2]+3:N_points[0]+N_points[1]+N_points[2]+N_points[3]+3]]
+y5 = [c - 1.539000 for c in phat[N_points[0]+N_points[1]+N_points[2]+N_points[3]:N_points[0]+N_points[1]+N_points[2]+N_points[3]+N_points[4]]]
+
+print(N_points[0]+N_points[1]+N_points[2]+N_points[3]+N_points[4])
 
 
 plt.plot(x1,y1)
