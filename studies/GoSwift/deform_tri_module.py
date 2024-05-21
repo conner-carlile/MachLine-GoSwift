@@ -292,19 +292,25 @@ if __name__ == "__main__":
 #[(24, 32.66058, 32.66058), (36, 0, -16.33746), (3, 3, 3), -0.25, (1, 1, 1)]
     #[(12, 32.66058, 32.66058), (58, 0, -16.33746), (3, 3, 3), -0.25, (1, 1, 1)]
     #[(5, 2.722535, 2.722535), (8.638409614562988, 0, -1.361479), (3, 3, 3), 0.5, (1, 1, 1)]
+
     origin:  (5941.16668, 0, 1250.0356)
     length:  267.3218
-    width:  32.66504
-    ffd_lengths = (1117.6, 830.072, 830.072/2)
-    ffd_origin = (5941.16668, -(207.018*2), -1420.0356)# -1250.0356    (0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-    ffd_num_points = (3,3,3) ## I keep this constant
-    ffd_delta_z = -1.5 ## I place the bump on the bottom of the geometry and "squish the box" instead of pull, thats why the delta z is negative
-    ffd_delta_index = (1,1,1)   #Any other vector 
+    #width:  32.66058
+    width = 22.96588
+    #[(2, 1.5, 1), (21.2, 10.7223, -4.5), (3, 3, 3), -1.5, (1, 1, 1)]
+    ffd_lengths =       (3, 9.681, 2)
+     ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+    #ffd_origin =        (24, 11.4723-ffd_lengths[1]/2, -4.5) ## pod aand wedge
+    ffd_origin =        (.68898-ffd_lengths[0]/2, width/2 -ffd_lengths[1]/2, -ffd_lengths[2]-2) ## pod aand wedge
+    #ffd_origin =        (9.36841, 2.722535/2-ffd_lengths[1]/2, -1) ## pod aand wedge 2-2.722535/2
+    ffd_num_points =    (3,3,3) ## I keep this constant
+    ffd_delta_z =       (20)    #0-3
+    ffd_delta_index =   (1,1,1)  #Any other vector 
 
 
     vert_coords, tri_verts, comp_num = load_tri_mesh_points(file)
     deformed_mesh_points = deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index, vert_coords,0,True)
-    write_tri_file("studies/GoSwift/meshes/pod_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
+    write_tri_file("studies/GoSwift/meshes/test_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
 
     ## The following is only to plot the original and deformed geometries and does not effect results
 
@@ -336,5 +342,5 @@ if __name__ == "__main__":
     ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    #plt.show()
+    plt.show()
            

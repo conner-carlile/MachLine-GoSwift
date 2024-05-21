@@ -14,8 +14,10 @@ input = json.loads(open(input_file).read())
 MACH = input["flow"]["freestream_mach_number"]
 
 #N_points = [1200, 1400, 1800, 2700, 3500] # starting number of points
-N_points = [3500, 3500, 3500, 3500, 3500]
-r_over_l = [.25, .5, 1, 2, 3] 
+#r_over_l = [.25, .5, 1, 2, 3] 
+
+N_points = 1200
+r_over_l = .25
 
 ref_length = 13000 #mm 
 altitude = 40000
@@ -57,6 +59,76 @@ print("z_pos: ", z_pos)
 
 print("width: ", maxy-miny)
 
+#def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
+#    global x0, x, xf, y, L, points
+#
+#    # Define azimuth angles
+#    delta_phi = 90 / (num_azimuth + 1)
+#
+#    print("delta phi: ",delta_phi)
+#    angles = []
+#    for i in range((num_azimuth * 2) + 1):
+#        angles.append(delta_phi * (i + 1))
+# 
+#    with open('studies/Goswift/off_body/off_body_sheet.csv', 'w', newline='') as csvfile:
+#        writer = csv.writer(csvfile)
+#        writer.writerow(["x,","y,","z"]) ## messes up the csv file when reading in
+#
+#        for i in range(len(N_points)):
+#            x_start = minx
+#            print("x_start: ", x_start)
+#            xf = maxx
+#            y = y_pos  # correct center
+#            print("y_pos: ", y_pos)
+#            z = z_pos  # correct center
+#
+#            L = xf - x_start  # length of geometry
+#            #Lu = L + (L / 2)  # length of csv line   #!!!!! pod_ensure
+#
+#            R = L * body_lengths[i]  # how far away from the body
+#            #ds = Lu / N_points #!!!!! undo pod_ensure
+#            #zo = z - R * np.sin((angles[i] - 90) * np.pi / 180)
+#            #zo = (-R) * np.sin((angles[0]) * np.pi / 180)# +(1.837082861*12) ##!!!!!!!! change back   pod_ensure
+#            zo = -R
+#            print("zo: ", zo)
+#
+#
+#            # define x start and end location with mach cone offset
+#            mu = np.arcsin(1 / M_number)
+#
+#            #x0 = R / np.tan(mu)  # will stay constant for all angles   pod_ensure
+#
+#            offset = R / np.tan(mu) ###!!!!!!!
+#            #offset = 31225
+#            x0 = x_start #+ 3.74 ########!!!!!!!!!!! Change back^^^ for just pod_ensure
+#
+#            Lu = L + (L/2) + offset
+#
+#            print("offset: ", offset)
+#            ds = Lu / N_points[i]   #####^^^^ pod_ensure
+#            print("ds: ", ds)   
+#            print("N_points: ", N_points[i])
+#
+#            #print("x0 (trig)", x0)
+#            #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
+#            y0 = (R) * np.cos((angles[0]) * np.pi / 180)# + width_body/2 #!!!!!!! pod ensure
+#            #print("y0 (trig)", y0)
+#
+#
+#            # define (x, y, z) locations for off-body control points
+#            # assuming x is the streamwise direction
+#            x = x0
+#            points = np.zeros((N_points[i], 3), dtype=float)
+#
+#            for j in range(N_points[i]): #+ 1
+#                points[j][0] = x
+#                points[j][1] = y0
+#                points[j][2] = zo
+#                x += ds
+#                
+#                # Write each point to the CSV file
+#                writer.writerow(points[j])
+
 def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
     global x0, x, xf, y, L, points
 
@@ -72,7 +144,7 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
         writer = csv.writer(csvfile)
         writer.writerow(["x,","y,","z"]) ## messes up the csv file when reading in
 
-        for i in range(len(N_points)):
+        for i in range(len(angles)):
             x_start = minx
             print("x_start: ", x_start)
             xf = maxx
@@ -83,10 +155,10 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
             L = xf - x_start  # length of geometry
             #Lu = L + (L / 2)  # length of csv line   #!!!!! pod_ensure
 
-            R = L * body_lengths[i]  # how far away from the body
+            R = L * body_lengths  # how far away from the body
             #ds = Lu / N_points #!!!!! undo pod_ensure
             #zo = z - R * np.sin((angles[i] - 90) * np.pi / 180)
-            zo = (-R) * np.sin((angles[0]) * np.pi / 180)# +(1.837082861*12) ##!!!!!!!! change back   pod_ensure
+            zo = (-R) * np.sin((angles[i]) * np.pi / 180)# +(1.837082861*12) ##!!!!!!!! change back   pod_ensure
             print("zo: ", zo)
 
 
@@ -95,27 +167,24 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
 
             #x0 = R / np.tan(mu)  # will stay constant for all angles   pod_ensure
 
-            #offset = R / np.tan(mu) ###!!!!!!!
-            offset = 48710.9843875075
+            offset = R / np.tan(mu) ###!!!!!!!
             x0 = x_start #+ 3.74 ########!!!!!!!!!!! Change back^^^ for just pod_ensure
 
             Lu = L + (L/2) + offset
+            ds = Lu / N_points   #####^^^^ pod_ensure
 
-            print("offset: ", offset)
-            ds = Lu / N_points[i]   #####^^^^ pod_ensure
-
-            #print("x0 (trig)", x0)
+            print("x0 (trig)", x0)
             #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
-            y0 = (R) * np.cos((angles[0]) * np.pi / 180)# + width_body/2 #!!!!!!! pod ensure
-            #print("y0 (trig)", y0)
+            y0 = (R) * np.cos((angles[i]) * np.pi / 180)# + width_body/2 #!!!!!!! pod ensure
+            print("y0 (trig)", y0)
 
 
             # define (x, y, z) locations for off-body control points
             # assuming x is the streamwise direction
             x = x0
-            points = np.zeros((N_points[i], 3), dtype=float)
+            points = np.zeros((N_points, 3), dtype=float)
 
-            for j in range(N_points[i]): #+ 1
+            for j in range(N_points): #+ 1
                 points[j][0] = x
                 points[j][1] = y0
                 points[j][2] = zo
@@ -123,6 +192,11 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
                 
                 # Write each point to the CSV file
                 writer.writerow(points[j])
+   
+    return angles
+
+
+
 
 angles = off_body_sheet(N_points, MACH, r_over_l, num_azimuth)  ### angle stuff
 
@@ -161,7 +235,7 @@ lengths, origins, bumps = (1,1,1)
 vert_coords, tri_verts, comp_num = load_tri_mesh_points(baseline_tri)
 deformed_mesh_points = deform_mesh_points(ffd_lengths0, ffd_origin0, ffd_num_points, ffd_delta_z0, ffd_delta_index, vert_coords,0,True)
 write_tri_file("studies/GoSwift/meshes/test_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
-#report = run_machline('studies/GoSwift/input_files/test.json')
+report = run_machline('studies/GoSwift/input_files/test.json')
 
 
 xg,p = pressures(p_static, density, speed_of_sound, v_inf, MACH, angles,points) ## delete "points" from pressure in off body module
@@ -172,7 +246,6 @@ xg,p = pressures(p_static, density, speed_of_sound, v_inf, MACH, angles,points) 
 phat = savgol_filter(p, 100, 3)
 #plt.plot(x[start_index:end_index+1], [yi - subtract_value for yi in y[start_index:end_index+1]])
 
-x_new = [xg,xg,xg,xg,xg]
 
 #with open('studies/Goswift/results/wedge_off_body.csv','w',newline='') as file:
 #    writer = csv.writer(file)
@@ -180,10 +253,16 @@ x_new = [xg,xg,xg,xg,xg]
 #    for item in phat:
 #        writer.writerow((item))
 
-pressure = np.array(phat)
-np.savetxt("studies/Goswift/results/wedge_off_body_p.csv", pressure, delimiter=",")
+print(len(p))
+print(len(phat))
+print("len p: ", len(p))
+print("len phat: ", len(phat))
 
-print(len(x_new))
+pressure = np.array(phat)
+np.savetxt("studies/Goswift/results/R_L_.25_wedge_off_body_p.csv", phat, delimiter=",")
+#np.savetxt("studies/Goswift/results/R_L_2_wedge_off_body_x.csv", xg, delimiter=",")
+
+#print(len(x_new))
 print(len(phat))
 print("!!!!!!!!!!!")
 
@@ -195,32 +274,34 @@ plt.plot(x,phat)
 plt.show()
 
 
-x1 = xg[0:N_points[0]]
-x2 = xg[0:N_points[1]]
-x3 = xg[0:N_points[2]]
-x4 = xg[0:N_points[3]]
-x5 = xg[0:N_points[4]]
+#x1 = xg[0:N_points[0]]
+#x2 = xg[0:N_points[1]]
+#x3 = xg[0:N_points[2]]
+#x4 = xg[0:N_points[3]]
+#x5 = xg[0:N_points[4]]
 
 
-#y1 = [y-0.3250 for y in phat[0:N_points[0]]]
-#y2 = [i-0.6500 for i in phat[N_points[0]+1:N_points[1]+N_points[0]+1]]
-#y3 = [j-.93000 for j in phat[N_points[0]+N_points[1]+1+1:N_points[2]+N_points[1]+N_points[0]+1+1]]
-#y4 = [k-1.26000 for k in phat[N_points[2]+N_points[1]+N_points[0]+1+1:N_points[3]+N_points[2]+N_points[1]+N_points[0]+1+1]]
-#y5 = [c-1.539000 for c in phat[N_points[3]+N_points[2]+N_points[1]+N_points[0]:N_points[4]+N_points[3]+N_points[2]+N_points[1]+N_points[0]+1]]
-y1 = [y - 0.3250 for y in phat[0:N_points[0]]]
-y2 = [i - 0.6500 for i in phat[N_points[0]+1:N_points[0]+N_points[1]+1]]
-y3 = [j - 0.93000 for j in phat[N_points[0]+N_points[1]+2:N_points[0]+N_points[1]+N_points[2]+2]]
-y4 = [k - 1.26000 for k in phat[N_points[0]+N_points[1]+N_points[2]+3:N_points[0]+N_points[1]+N_points[2]+N_points[3]+3]]
-y5 = [c - 1.539000 for c in phat[N_points[0]+N_points[1]+N_points[2]+N_points[3]:N_points[0]+N_points[1]+N_points[2]+N_points[3]+N_points[4]]]
+##y1 = [y-0.3250 for y in phat[0:N_points[0]]]
+##y2 = [i-0.6500 for i in phat[N_points[0]+1:N_points[1]+N_points[0]+1]]
+##y3 = [j-.93000 for j in phat[N_points[0]+N_points[1]+1+1:N_points[2]+N_points[1]+N_points[0]+1+1]]
+##y4 = [k-1.26000 for k in phat[N_points[2]+N_points[1]+N_points[0]+1+1:N_points[3]+N_points[2]+N_points[1]+N_points[0]+1+1]]
+##y5 = [c-1.539000 for c in phat[N_points[3]+N_points[2]+N_points[1]+N_points[0]:N_points[4]+N_points[3]+N_points[2]+N_points[1]+N_points[0]+1]]
+#y1 = [y - 0.3250 for y in phat[0:N_points[0]]]
+#y2 = [i - 0.6500 for i in phat[N_points[0]+1:N_points[0]+N_points[1]+1]]
+#y3 = [j - 0.93000 for j in phat[N_points[0]+N_points[1]+2:N_points[0]+N_points[1]+N_points[2]+2]]
+#y4 = [k - 1.26000 for k in phat[N_points[0]+N_points[1]+N_points[2]+3:N_points[0]+N_points[1]+N_points[2]+N_points[3]+3]]
+#y5 = [c - 1.539000 for c in phat[N_points[0]+N_points[1]+N_points[2]+N_points[3]:N_points[0]+N_points[1]+N_points[2]+N_points[3]+N_points[4]]]
 
-print(N_points[0]+N_points[1]+N_points[2]+N_points[3]+N_points[4])
+#print(N_points[0]+N_points[1]+N_points[2]+N_points[3]+N_points[4])
 
 
-plt.plot(x1,y1)
-plt.plot(x2,y2)
-plt.plot(x3,y3)
-plt.plot(x4,y4)
-plt.plot(x5,y5)
+#plt.plot(x1,y1)
+#plt.plot(x2,y2)
+#plt.plot(x3,y3)
+#plt.plot(x4,y4)
+#plt.plot(x5,y5)
+
+plt.plot(xg,phat)
 
 plt.show()
 

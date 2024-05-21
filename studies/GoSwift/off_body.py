@@ -9,8 +9,6 @@ import json
 import matplotlib.pyplot as plt
 from rapidboom.sboomwrapper import SboomWrapper
 import pyldb
-#from case_running_functions import run_machline
-
 
 def find_mins(obj):
     """ Reads in stl mesh file and finds first (x,y,z) point for centerline and length calcs"""
@@ -29,9 +27,11 @@ def find_mins(obj):
         x,y,z = row
         if x == minx:
             #y_pos = y
-            y_pos = (maxy + miny)/2
-            #z_pos = z
-            z_pos = (maxz + minz)/2
+            z_pos = z
+            y_pos = (maxy - miny)/2
+            #z_pos = (maxz + minz)/2
+            #y_pos = 0
+            #z_pos = 0
     #print("length", maxx - minx)
     width_body = maxy - miny
     #z_pos = z_pos - width_body ##!!!!!!!!! delete later
@@ -39,7 +39,8 @@ def find_mins(obj):
 
 ## keep new y and z just shift x over outside mach cone *****????
 def off_body(N_points,M_number,body_lengths):    
-    """ Defines and creates csv file of desired off body points"""
+    """ Defines and creates csv file of desired off body points (line)"""
+
     global x0, x, xf,y, L, points
     x_start = minx
     
@@ -88,6 +89,8 @@ def off_body(N_points,M_number,body_lengths):
 
 
 def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
+    """ Defines and creates csv file of desired off body points with multiple azimuth angles"""
+
     global x0, x, xf, y, L, points
 
     # Define azimuth angles
@@ -133,7 +136,7 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
 
             print("x0 (trig)", x0)
             #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
-            y0 = (R) * np.cos((angles[i]) * np.pi / 180)# + width_body/2 #!!!!!!! pod ensure
+            y0 = (R) * np.cos((angles[i]) * np.pi / 180) + y_pos# + width_body/2 #!!!!!!! pod ensure ## add back in???
             print("y0 (trig)", y0)
 
 
@@ -190,8 +193,8 @@ def run_machline(input_filename, delete_output=True, run=True):
     return report
 ################################################################################################
 
-def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles, points): ## delete points
-    """ Calculates pressures from MachLine Calculated Velocities """
+def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles): ## delete points
+    """ Calculates off body pressures from MachLine calculated velocities """
 
     c = speed_of_sound
     gamma = 1.4         ##### ratio of specific heats for air
@@ -233,7 +236,7 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles, points): #
         writer.writerows(zip(xg,p))
 #================================================================================================
 
-#============================== new pressure ====================================================
+#======================= new pressure calcs (doesnt work) =======================================
     #with open('studies/Goswift/results/off_body_velocity.csv','r') as file:
     #    rows = csv.DictReader(file)
     #    for row in rows: 
@@ -251,54 +254,9 @@ def pressures(p_static, density, speed_of_sound, v_inf, Mach, angles, points): #
     return xg, p
 
 
-
-
-#======================================== SBoom Stuff ================================================
-#def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):
-#    
-#    print()
-#    print("Running sBoom...")
-#    #dp_directory = "studies/GoSwift"
-#    data = np.genfromtxt('studies/GoSwift/results/off_body_pressure.csv', delimiter=',', skip_header=1)
-#    #conv = 1/0.0254
-#    sig = np.asarray([data[:,0], data[:,1]]).T
-#
-#    #MACH = Mach #1.6 # set Mach for current case
-#    #r_over_l = 3
-#    #ref_length = 154 #update for n+1
-#    #altitude = 50000
-#    PROP_R = r_over_l*ref_length# *3.28084
-#
-#    _sboom = SboomWrapper('./temp', 'sboom.exe')
-#    _sboom.set(mach_number=MACH,
-#                altitude=altitude,
-#                propagation_start=PROP_R,
-#                altitude_stop=0,
-#                output_format=0,
-#                input_xdim=2,
-#                azimuthal_angles = 0,
-#                propagation_points=40000,
-#                padding_points=8000)
-#
-#    _sboom.set(signature=sig, input_format=0) # set input signature and format
-#    sboom_results = _sboom.run(atmosphere_input=None) # run sBOOOM
-#    g_sig = sboom_results["signal_0"]["ground_sig"]
-#
-#    # np.savetxt(dp_directory + label + 'g_sig.txt', g_sig)
-#
-#    noise_level = pyldb.perceivedloudness(g_sig[:, 0],
-#                                          g_sig[:, 1],)
-#
-#    #plt.plot(g_sig[:, 0],g_sig[:, 1])
-#    #plt.title("Ground Signature")
-#    #plt.show()
-#    #print('PLdB (pressure): ', noise_level)
-#
-#    return g_sig, noise_level
-
-
 #############  working azimuth angles, just need to add angle constraint ###########
 def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):  ## add azimuth angles here and define a
+    """ Runs sBoom and calculates ground signature and perceived loudness """
     
     print()
     print("Running sBoom...")
@@ -330,8 +288,8 @@ def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):  ## add azim
                     input_xdim=0,       ## 1 = inches, 0 = ft
                     num_azimuthal = 1,
                     azimuthal_angles = angle,
-                    propagation_points=4000, #add zero
-                    padding_points=800)
+                    propagation_points=40000, #add zero
+                    padding_points=8000)
 
         _sboom.set(signature=sig, input_format=0) # set input signature and format
         sboom_results = _sboom.run(atmosphere_input=None) # run sBOOOM
@@ -388,34 +346,7 @@ def _write_TRI(n_verts, n_tris, vertices, tri_verts, comp_num, tri_filename):
             print("{0:<4d}".format(int(comp)), file=export_handle)
 
 
-
-#def convert_tri_to_stl(tri_filename, stl_filename='output.stl'):
-#    # Read data from the .tri file
-#    with open(tri_filename, 'r') as tri_file:
-#        lines = tri_file.readlines()
-#
-#    # Extract data from the .tri file
-#    nVerts, nTris = map(int, lines[0].split())
-#    vertices = [list(map(float, line.split())) for line in lines[1:nVerts + 1]]
-#    tri_verts = [list(map(int, line.split())) for line in lines[nVerts + 1:nVerts + nTris + 1]]
-#
-#    # Write data to the .stl file
-#    with open(stl_filename, 'w') as stl_file:
-#        stl_file.write("solid\n")
-#
-#        for tri_int in tri_verts:
-#            stl_file.write(" facet normal  {:e} {:e} {:e}\n".format(0.0, 0.0, 0.0))
-#            stl_file.write("   outer loop\n")
-#
-#            for vertex_index in tri_int:
-#                vertex = vertices[vertex_index]
-#                stl_file.write("     vertex {:e} {:e} {:e}\n".format(*vertex))
-#
-#            stl_file.write("   endloop\n")
-#            stl_file.write(" endfacet\n")
-#
-#        stl_file.write("endsolid\n")
-
+'''___ Test Run Script / Check ___'''
 
 if __name__ == "__main__":
 
@@ -428,7 +359,7 @@ if __name__ == "__main__":
     Mach = input["flow"]["freestream_mach_number"]
 
     N_points = 1000
-    r_over_l = 2.318594
+    r_over_l = 1.5
     ref_length = 22.27682 # 154 ft for N+2,  20 ft for SH
     altitude = 40000
     p_static = 393.13 #lbf/ft^2
@@ -448,66 +379,3 @@ if __name__ == "__main__":
     #xg,p = pressures(243.61, .00036392, 968.08, 1548.928, Mach ) 
 
     print(angles)
-
-
-
-
-#
-#    global x0, x, xf, y, L, points
-#
-#    # Define azimuth angles
-#    delta_phi = 90 / (num_azimuth + 1)
-#
-#    print("delta phi: ",delta_phi)
-#    angles = []
-#    for i in range((num_azimuth * 2) + 1):
-#        angles.append(delta_phi * (i + 1))
-# 
-#    with open('studies/Goswift/off_body/off_body_sheet.csv', 'w', newline='') as csvfile:
-#        writer = csv.writer(csvfile)
-#        writer.writerow(["x, y, z"]) ## messes up the csv file when reading in
-#
-#        for i in range(len(angles)):
-#            x_start = minx
-#            print("x_start: ", x_start)
-#            xf = maxx
-#            y = y_pos  # correct center
-#            print("y_pos: ", y_pos)
-#            z = z_pos  # correct center
-#
-#            L = xf - x_start  # length of geometry
-#            Lu = L + (L / 2)  # length of csv line
-#
-#            R = L * body_lengths  # how far away from the body
-#            ds = Lu / N_points
-#            #zo = z - R * np.sin((angles[i] - 90) * np.pi / 180)
-#            zo = (-R) * np.sin((angles[i]) * np.pi / 180)
-#
-#
-#            # define x start and end location with mach cone offset
-#            mu = np.arcsin(1 / M_number)
-#
-#            x0 = R / np.tan(mu)  # will stay constant for all angles
-#            
-#            print("x0 (trig)", x0)
-#            #y0 = y - R * np.cos((angles[i] - 90) * np.pi / 180)
-#            y0 = (R) * np.cos((angles[i]) * np.pi / 180) + width_body/2
-#            print("y0 (trig)", y0)
-#
-#
-#            # define (x, y, z) locations for off-body control points
-#            # assuming x is the streamwise direction
-#            x = x0
-#            points = np.zeros((N_points, 3), dtype=float)
-#
-#            for j in range(N_points): #+ 1
-#                points[j][0] = x
-#                points[j][1] = y0
-#                points[j][2] = zo
-#                x += ds
-#                
-#                # Write each point to the CSV file
-#                writer.writerow(points[j])
-#   
-#    return angles
-#

@@ -1,0 +1,59 @@
+{
+    "General_Format":{
+		"N":100,
+        "Font_Size":7.1,
+        "Figure_Size":[3.0,2.3],
+        "Grid": {
+            "is_present":1,
+            "Which":"major",
+            "Alpha":0.4,
+            "Line_Color":"0.6",
+            "Line_Style":"dashed",
+            "Dash_Style":"0, (10, 15)",
+            "Line_Width": 0.09375
+        }
+    },
+    "Axis_Format":{
+        "Minor_Ticks": 1,
+        "Tick_Label_Size": 7.1,
+        "X_Axis":{
+            "Limits": [-10,10],
+            "Tick_Density": [-10,-8,-6,-4,-2,0,2,4,6,8,10],
+            "Tick_Label_Format": "%d"
+        },
+        "Y_Axis":{
+            "Limits": [-10,10],
+            "Tick_Density": [-10,-8,-6,-4,-2,0,2,4,6,8,10],
+            "Tick_Label_Format": "%d"
+        }
+    },       
+    "Data_Series_Format":{
+        "Series_1":{
+            "index" : 0,
+            "Name": "Stress_Limited",
+            "Line_Width": 0.75,
+            "Line_Color": "k",
+            "Line_Style":"solid",
+            "Contour_Density": 20,
+            "Labels":{
+                "is_present": 0,
+                "Fontsize": 7.1,
+                "Label_Format": "%d"
+            }
+        },
+        "Series_2":{
+            "index" : 1,
+            "Name": "Deflection_limited",
+            "Line_Width": 0.75,
+            "Line_Color": "k",
+            "Line_Style":"dashed",
+            "Dash_Style":"0, (10.0, 5.0)",
+            "Contour_Density":20,
+            "Labels":{
+                "is_present": 0,
+                "Fontsize": 7.1,
+                "Label_Format": "%d"
+            }
+        }
+    }
+}

@@ -13,21 +13,21 @@ start_time = time.time()
 input_file = "studies/GoSwift/input_files/test.json"
 
 input = json.loads(open(input_file).read())
-MACH = input["flow"]["freestream_mach_number"]
+Mach = input["flow"]["freestream_mach_number"]
 
-N_points = 3000 # @ 1 F-15 body length
-r_over_l = 1.5 #2.94 #2.3185
-ref_length = 21.6533 # 154 ft for N+2,  20 ft for SH
+N_points = 2000 # @ 1 F-15 body length
+r_over_l = 0.1 ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185
+ref_length = 42.65092 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft
 #altitude = 50000
 #v_inf... = atm calcs
 #p_static = 243.61
 #density = .00036392
 #speed_of_sound = 968.08
 #v_inf = 1548.928
-altitude = 40000
+altitude = 40000 #ft
 p_static = 393.13 #lbf/ft^2
 density = .00058728
-speed_of_sound = 968.08
+speed_of_sound = 968.08 #ft/s
 v_inf = 1548.928
 PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
 num_azimuth = 0 
@@ -52,7 +52,7 @@ baseline_tri = "studies/GoSwift/meshes/test_sw.tri"
 body_mesh = mesh.Mesh.from_file(baseline_stl)
 minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
 #off_body(N_points,MACH,r_over_l) 
-angles = off_body_sheet(N_points, MACH, r_over_l, num_azimuth)  ### angle stuff
+angles = off_body_sheet(N_points, Mach, r_over_l, num_azimuth)  ### angle stuff
 
 length_body = maxx - minx
 width_body = maxy - miny
@@ -82,13 +82,31 @@ delta_index = []
 #ffd_delta_z0 = (0) 
 #ffd_delta_index = (1,1,1)  # Constant 
 
-#ffd_lengths0 = (1117.6, 415.036, 415.036)
-ffd_lengths0 = (1,1,1)
-#ffd_origin0 = (5941.16668, -207.018, -1250.0356)#(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-ffd_origin0 = (0,0,0)#(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-ffd_num_points = (3,3,1) ## I keep this constant
-ffd_delta_z0 = (0)  ## change ffd_deltz_z to ensure correct step size
-ffd_delta_index = (1,1,1)
+#ffd_lengths0 =      (1117.6 / 304.8, 415.036 / 304.8, 415.036 / 304.8)
+##ffd_lengths0 =     (1,1,1)
+##ffd_origin0 =      (1117.6, 830.072, 830.072/2)##(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
+#ffd_origin0 =       (5941.16668 / 304.8, -(207.518) / 304.8, -1365.0716 / 304.8)
+#ffd_num_points =    (3,3,3) ## I keep this constant
+#ffd_delta_z0 =      (0)  ## change ffd_deltz_z to ensure correct step size
+#ffd_delta_index =   (1,1,1)
+
+### Wedge and pod start at front of body
+#ffd_lengths0 =     (1, 1.5, 1)
+##ffd_lengths0 =    
+#ffd_origin0 =      (16, 11.4723-ffd_lengths0[1]/2, -4.5)
+#ffd_num_points =   (3,3,3)
+#ffd_delta_z0 =     (-0.5)
+#ffd_delta_index =  (1,1,1)
+
+
+#ffd_lengths0 =     (3, 2.5, 1) ## pod and wedge
+#ffd_origin0 =      (24, 11.4723-ffd_lengths0[1]/2, -4.5) ## pod and wedge
+ffd_lengths0 =     (1, 1, 1)
+ffd_origin0 =      (0,0,0)
+ffd_num_points =   (3,3,3)
+ffd_delta_z0 =     (0)
+ffd_delta_index =  (1,1,1)
+
 
 print("origin: ", ffd_origin0)
 print("length: ", length_body)
@@ -103,21 +121,20 @@ lengths, origins, bumps = (1,1,1)
 iteration = 0
 skips = 0
 for i in range(lengths):
-    ffd_lengths = (ffd_lengths0[0] + (i*43), ffd_lengths0[1], ffd_lengths0[2])
+    ffd_lengths = (ffd_lengths0[0] + (i*2), ffd_lengths0[1], ffd_lengths0[2])
     for j in range(origins):
         #ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
-        ffd_origin = (ffd_origin0[0] + (j*12), ffd_origin0[1], ffd_origin0[2])
+        ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1], ffd_origin0[2])
         for k in range(bumps):
-            ffd_delta_z = (ffd_delta_z0 + (k*.75)) #####!!!!!!!!
-
-            #print(ffd_lengths, ",", ffd_origin, ",", ffd_delta_z)
+            ffd_delta_z = (ffd_delta_z0 - (k*3.5)) #####!!!!!!!!  was 0.5
             
+            ## Skip iteration if FFD box is too big for body
             if ffd_lengths[0] > length_body - ffd_origin[0]:
                 skips += 1
                 print("box location and/or size is too big to fit on the body")
+                print("skipping iteration")
                 continue
             
-
             ## Deform baseline mesh with new FFD box parameters
             vert_coords, tri_verts, comp_num = load_tri_mesh_points(baseline_tri)
             deformed_mesh_points = deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index, vert_coords,0,True)
@@ -125,7 +142,6 @@ for i in range(lengths):
 
             ## Run MachLine with new deformed geometry
             report = run_machline('studies/GoSwift/input_files/test.json')
-            #report = run_machline('studies/GoSwift/input_files/sheet_input.json')  ## Can probably delete this because test input file has sheet capability now
 
             ## Skips folowing calculations if MachLine failed to generate report
             if report == None:
@@ -136,13 +152,13 @@ for i in range(lengths):
             
             ## Post processing of bump location and pressure data
             ffd_box.append([ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index])
-            xg,p = pressures(p_static, density, speed_of_sound, v_inf, MACH, angles) #### run at 50000 ft      , 1452.12 @ 1.5,       1548.928 @ 1.6
+            xg,p = pressures(p_static, density, speed_of_sound, v_inf, Mach, angles)
 
             x_loc.append(xg)
             nearfield_sig.append(p)
 
             ## Run sBOOM
-            g_sig, noise_level = boom(MACH, r_over_l, ref_length, altitude, N_points, angles) 
+            g_sig, noise_level = boom(Mach, r_over_l, ref_length, altitude, N_points, angles) ## add loop here to update SBoom input flags based on mesh units 
             ground_sig.append(g_sig)
             loudness.append(noise_level)
 

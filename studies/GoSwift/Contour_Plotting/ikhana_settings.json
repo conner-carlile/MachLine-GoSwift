@@ -1,0 +1,45 @@
+{
+    "General_Format":{
+		"N":100,
+        "Font_Size":7.1,
+        "Figure_Size":[3.0,2.3],
+        "Grid": {
+            "is_present":1,
+            "Which":"major",
+            "Alpha":0.4,
+            "Line_Color":"0.6",
+            "Line_Style":"dashed",
+            "Dash_Style":"0, (10, 15)",
+            "Line_Width": 0.09375
+        }
+    },
+    "Axis_Format":{
+        "Minor_Ticks": 1,
+        "Tick_Label_Size": 7.1,
+        "X_Axis":{
+            "Limits": [52,100],
+            "Tick_Density": [52.0,54.0,56.0,58.0,60.00,62.00,64.00,66.00,68.00,70.00,72.00,74.00,76.00,78.00,80.00,82,84,86,88,90,92,94,96,98,100],
+            "Tick_Label_Format": "%d"
+        },
+        "Y_Axis":{
+            "Limits": [-0.333,0.0],
+            "Tick_Density": [-0.333333333,-0.3,-0.275,-0.25,-0.225,-0.2,-0.175,-0.15,-0.125,-0.1,-0.075,-0.05,-0.025,0],
+            "Tick_Label_Format": "%.2f"
+        }
+    },       
+    "Data_Series_Format":{
+        "Series_1":{
+            "index" : 0,
+            "Name": "fuel_burn",
+            "Line_Width": 0.75,
+            "Line_Color": "k",
+            "Line_Style":"solid",
+            "Contour_Density": 20,
+            "Labels":{
+                "is_present": 0,
+                "Fontsize": 7.1,
+                "Label_Format": "%d"
+            }
+        }
+    }
+}

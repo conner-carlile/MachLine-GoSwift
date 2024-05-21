@@ -110,8 +110,8 @@ def _write_TRI(nVerts, nTris, vertices, tri_verts, comp_num, filename = 'test_fi
 '''------------RUN SCRIPT------------'''
 if __name__ == "__main__":
 
-    num_ax = 100 # number of axial panels
-    num_theta = 30 # number of radial panels
+    num_ax = 200 # number of axial panels
+    num_theta = 60 # number of radial panels
     length = 22.27666 # length of SH body
     #rmax = length * 0.075 # maximum radius of SH body
     rmax = length * 0.075 # maximum radius of SH body
