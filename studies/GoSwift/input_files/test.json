@@ -14,7 +14,7 @@
         }
     },
     "solver": {
-        "formulation": "neumann-mass-flux",
+        "formulation": "dirichlet-morino",
         "run_checks": false,
         "control_point_offset": 1.0e-08
     },

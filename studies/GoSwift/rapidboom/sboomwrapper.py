@@ -94,7 +94,7 @@ class SboomWrapper:
                                   ["nonlinear", True],
                                   ["thermoviscous", True],
                                   ["relaxation", True],
-                                  ["step_size", 0.01], #was 0.01
+                                  ["step_size", 0.001], #was 0.01
                                   ["reflection_factor", 1.9],
                                   ["resampled_points", 1000],
                                   ["padding_tolerance", 0.001],

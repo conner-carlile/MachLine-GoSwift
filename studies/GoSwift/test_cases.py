@@ -141,7 +141,7 @@ for i in range(lengths):
             write_tri_file("studies/GoSwift/meshes/test_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
 
             ## Run MachLine with new deformed geometry
-            report = run_machline('studies/GoSwift/input_files/test.json')
+            report = run_machline('studies/GoSwift/input_files/test.json', run = False)
             #report = "studies/GoSwift/results/test.json"
             ## Skips folowing calculations if MachLine failed to generate report
             if report == None:

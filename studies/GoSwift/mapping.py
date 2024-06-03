@@ -309,14 +309,14 @@ sig = sig_list[0]
 print("sig_list shape: ", sig_list[0].shape)
 print("sig_list values: ", sig_list[0])
 #angle = (angles[j]-90)
-for i in range(2000): ###
+for i in range(10): ###
     g_sig = []
     noise_level = []
     _sboom = SboomWrapper('./temp', 'sboom.exe')
     _sboom.set(mach_number=MACH,
                 altitude=altitude,
                 propagation_start= PROP_R,
-                altitude_stop= 3995-(i),
+                altitude_stop= 3995-(i*50),
                 output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
                 input_xdim=0,       ## 1 = inches, 0 = ft
                 #num_azimuthal = 1,
@@ -326,7 +326,7 @@ for i in range(2000): ###
                 )
     _sboom.set(signature=sig, input_format=0) # set input signature and format
     sboom_results = _sboom.run(atmosphere_input=None) # run sBOOOM
-    print("sBOOM parameters: ", _sboom._parameters)
+    #print("sBOOM parameters: ", _sboom._parameters)
     g_sig_single = sboom_results["signal_0"]["ground_sig"]
     # np.savetxt(dp_directory + label + 'g_sig.txt', g_sig)
     noise_level_single = pyldb.perceivedloudness(g_sig_single[:, 0],
@@ -353,12 +353,12 @@ def animate(i):
     plt.legend(['UNS3D'])
     plt.tight_layout()
 
-## Create the animation object
-#fig = plt.figure()
-#ani = animation.FuncAnimation(fig, animate, frames=len(g_list), interval=300, repeat=True)
-##
-#gif_writer = PillowWriter(fps=1)  # Set frames per second (fps)
-#ani.save("animation.gif", writer=gif_writer)
+# Create the animation object
+fig = plt.figure()
+ani = animation.FuncAnimation(fig, animate, frames=len(g_list), interval=300, repeat=True)
+#
+gif_writer = PillowWriter(fps=1)  # Set frames per second (fps)
+ani.save("animation.gif", writer=gif_writer)
 
-## Display the animation
-#plt.show()
+# Display the animation
+plt.show()
