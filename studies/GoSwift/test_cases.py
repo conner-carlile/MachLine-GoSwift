@@ -15,9 +15,9 @@ input_file = "studies/GoSwift/input_files/test.json"
 input = json.loads(open(input_file).read())
 Mach = input["flow"]["freestream_mach_number"]
 
-N_points = 2000 # @ 1 F-15 body length
-r_over_l = 0.1 ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185
-ref_length = 42.65092 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft
+N_points = 1000 # @ 1 F-15 body length
+r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185
+ref_length = 134.1556 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft, jwb = 126.8062
 #altitude = 50000
 #v_inf... = atm calcs
 #p_static = 243.61
@@ -142,7 +142,7 @@ for i in range(lengths):
 
             ## Run MachLine with new deformed geometry
             report = run_machline('studies/GoSwift/input_files/test.json')
-
+            #report = "studies/GoSwift/results/test.json"
             ## Skips folowing calculations if MachLine failed to generate report
             if report == None:
                 print()

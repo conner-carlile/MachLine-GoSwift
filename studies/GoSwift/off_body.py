@@ -284,12 +284,15 @@ def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):  ## add azim
                     altitude=altitude,
                     propagation_start=PROP_R,
                     altitude_stop=0,
-                    output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
+                    output_format=0,  ########  0 = dp vs ms        ########### 1 = ft vs dp/P
                     input_xdim=0,       ## 1 = inches, 0 = ft
                     num_azimuthal = 1,
                     azimuthal_angles = angle,
-                    propagation_points=40000, #add zero
-                    padding_points=8000)
+                    #propagation_points=40000, #add zero
+                    #padding_points=8000
+                    propagation_points=20000, #add zero
+                    padding_points=5000
+                    )
 
         _sboom.set(signature=sig, input_format=0) # set input signature and format
         sboom_results = _sboom.run(atmosphere_input=None) # run sBOOOM
