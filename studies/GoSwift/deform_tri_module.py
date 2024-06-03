@@ -10,13 +10,13 @@ from mpl_toolkits.mplot3d import Axes3D
 
 def load_tri_mesh_points(tri_filename):
     
-    nVerts, nTris = pd.read_table(tri_filename, nrows = 1, delim_whitespace = True)
+    nVerts, nTris = pd.read_table(tri_filename, nrows = 1, sep=r'\s+')
     nVerts = int(nVerts)
     nTris = int(nTris)
     
-    vert_coords = pd.read_table(tri_filename, nrows = nVerts, header = None, index_col = False, skiprows = 1, delim_whitespace = True).to_numpy()
-    tri_verts = pd.read_table(tri_filename, nrows = nTris, skiprows = nVerts, delim_whitespace = True).to_numpy()
-    comp_num = pd.read_table(tri_filename, nrows = nTris, skiprows = nVerts + nTris, delim_whitespace = True).to_numpy()
+    vert_coords = pd.read_table(tri_filename, nrows = nVerts, header = None, index_col = False, skiprows = 1, sep=r'\s+').to_numpy()
+    tri_verts = pd.read_table(tri_filename, nrows = nTris, skiprows = nVerts, sep=r'\s+').to_numpy()
+    comp_num = pd.read_table(tri_filename, nrows = nTris, skiprows = nVerts + nTris, sep=r'\s+').to_numpy()
     
     return vert_coords, tri_verts, comp_num
 
