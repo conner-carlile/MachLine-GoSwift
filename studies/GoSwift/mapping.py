@@ -42,7 +42,7 @@ with open('studies/Goswift/results/pod_wedge_nearfield.csv', 'r') as csvfile:
 print("x_loc: ", x_loc)
 
 
-sav = savgol_filter(nearfield_sig, 100, 2)
+sav = savgol_filter(nearfield_sig, 100, 3)
 exp = exponential_smoothing(nearfield_sig, 0.05)
 
 plt.plot(x_loc, nearfield_sig)
@@ -55,7 +55,7 @@ plt.plot(x_loc, exp)
 plt.title('Exponential Smoothing')
 plt.show()
 
-sav_exp = savgol_filter(exp, 100, 2)
+sav_exp = savgol_filter(exp, 100, 3)
 exp_sav = exponential_smoothing(sav, 0.05)
 
 #plt.plot(x_loc[0], sav_exp)
@@ -91,16 +91,17 @@ beta = [0.7343305552,
 0.9347043834,
 0.5951635418,
 0.5951635418,
-1.006472864,
-1.064990429,
-0.9347043834,
-0.9347043834,
-0.9347043834,
-1.006472864,
-1.113307846,
+0.7,
+0.775,
+0.775,
+0.775,
+0.775,
+0.675,
+0.675,
 0.5951635418]
 
 nearfield_sig = exp_sav
+
 
 ## Loop through nearfield signature and find nodes that are closest to the points in x_2
 nodes_x = []
