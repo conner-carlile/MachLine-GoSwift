@@ -309,14 +309,14 @@ sig = sig_list[0]
 print("sig_list shape: ", sig_list[0].shape)
 print("sig_list values: ", sig_list[0])
 #angle = (angles[j]-90)
-for i in range(10): ###
+for i in range(1500): ###
     g_sig = []
     noise_level = []
     _sboom = SboomWrapper('./temp', 'sboom.exe')
     _sboom.set(mach_number=MACH,
                 altitude=altitude,
                 propagation_start= PROP_R,
-                altitude_stop= 3995-(i*50),
+                altitude_stop= 3995-(i),
                 output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
                 input_xdim=0,       ## 1 = inches, 0 = ft
                 #num_azimuthal = 1,
