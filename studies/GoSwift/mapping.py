@@ -274,7 +274,7 @@ plt.show()
 #data = np.genfromtxt('studies/GoSwift/results/off_body_pressure.csv', delimiter=',', skip_header=1)
 r_over_l = 3
 ref_length = 42.65
-altitude = 4000
+altitude = 40000
 MACH = 1.6
 
 PROP_R = R # *3.28084
@@ -305,19 +305,19 @@ print("sig_list: ", sig_list)
 
 g_list = [] ###
 noise_list = [] ###
-
+rl = []
 sig = sig_list[0]
 print("sig_list shape: ", sig_list[0].shape)
 print("sig_list values: ", sig_list[0])
 #angle = (angles[j]-90)
-for i in range(0): ###
+for i in range(10): ###
     g_sig = []
     noise_level = []
     _sboom = SboomWrapper('./temp', 'sboom.exe')
     _sboom.set(mach_number=MACH,
                 altitude=altitude,
                 propagation_start= PROP_R,
-                altitude_stop= 3995-(i),
+                altitude_stop= altitude-(ref_length*((i*.25)+.5)),
                 output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
                 input_xdim=0,       ## 1 = inches, 0 = ft
                 #num_azimuthal = 1,
@@ -332,11 +332,12 @@ for i in range(0): ###
     # np.savetxt(dp_directory + label + 'g_sig.txt', g_sig)
     noise_level_single = pyldb.perceivedloudness(g_sig_single[:, 0],
                                                 g_sig_single[:, 1],)
+    rl.append(round((ref_length/ (ref_length*((i*.25)+.5))),3))
     g_sig.append(g_sig_single)
     noise_level.append(noise_level_single)
     g_list.append(g_sig) ###
     noise_list.append(noise_level) ###
-
+###########################################################
 
 plt.plot(g_sig[0][:,0], g_sig[0][:,1]) ###
 plt.show() ###
@@ -349,9 +350,9 @@ def animate(i):
     plt.title("Ground Signature")
     plt.ylabel("dp (psf)")
     plt.xlabel("X (ft)")
-    plt.ylim(-300, 300)
-    plt.xlim(0, 80)
-    plt.legend(['UNS3D'])
+    plt.ylim(-100, 100)
+    plt.xlim(0, 60)
+    plt.legend([rl[i]])
     plt.tight_layout()
 
 # Create the animation object
