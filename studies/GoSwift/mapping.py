@@ -310,7 +310,7 @@ sig = sig_list[0]
 print("sig_list shape: ", sig_list[0].shape)
 print("sig_list values: ", sig_list[0])
 #angle = (angles[j]-90)
-for i in range(1500): ###
+for i in range(0): ###
     g_sig = []
     noise_level = []
     _sboom = SboomWrapper('./temp', 'sboom.exe')
