@@ -362,7 +362,7 @@ if __name__ == "__main__":
     Mach = input["flow"]["freestream_mach_number"]
 
     N_points = 1000
-    r_over_l = 1.5
+    r_over_l = 3
     ref_length = 22.27682 # 154 ft for N+2,  20 ft for SH
     altitude = 40000
     p_static = 393.13 #lbf/ft^2
@@ -376,6 +376,8 @@ if __name__ == "__main__":
     minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
     x0, x, xf,y, L, points = off_body(N_points, Mach, r_over_l)
     print("L: ", L)
+    print(miny)
+    print(maxy)
     #off_body(N_points,Mach,r_over_l)
     angles = off_body_sheet(N_points, Mach, r_over_l, num_azimuth)
 

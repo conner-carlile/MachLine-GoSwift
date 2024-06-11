@@ -253,23 +253,23 @@ plt.show()
 #plt.show()
 
 
-podT_uns = []
-with open('studies/GoSwift/results/Super-Inclined Panel Study - NV Surface Baseline.csv', 'r') as csvfile:
-    reader = csv.reader(csvfile)
-    next(reader)  # Skip the header row if it exists
-    for row in reader:
-        x_t_uns = float(row[0])
-        p_t_uns = float(row[1])
-        podT_uns.append((x_t_uns, p_t_uns))
-        #print(x_t_uns, p_t_uns)
-
-plt.scatter([x for x, _ in podT_uns], [p for _, p in podT_uns], s=1, color='blue')
-#plt.plot([x for x, _ in podT_uns], [p for _, p in podT_uns])
-#plt.legend(['MachLine', 'UNS3D'])
-plt.title('Surface Pressure (raw)')
-plt.xlabel('X (ft)')
-plt.ylabel('dp/p')
-plt.show()
+#podT_uns = []
+#with open('studies/GoSwift/results/Super-Inclined Panel Study - NV Surface Baseline.csv', 'r') as csvfile:
+#    reader = csv.reader(csvfile)
+#    next(reader)  # Skip the header row if it exists
+#    for row in reader:
+#        x_t_uns = float(row[0])
+#        p_t_uns = float(row[1])
+#        podT_uns.append((x_t_uns, p_t_uns))
+#        #print(x_t_uns, p_t_uns)
+#
+#plt.scatter([x for x, _ in podT_uns], [p for _, p in podT_uns], s=1, color='blue')
+##plt.plot([x for x, _ in podT_uns], [p for _, p in podT_uns])
+##plt.legend(['MachLine', 'UNS3D'])
+#plt.title('Surface Pressure (raw)')
+#plt.xlabel('X (ft)')
+#plt.ylabel('dp/p')
+#plt.show()
 
 #data = np.genfromtxt('studies/GoSwift/results/off_body_pressure.csv', delimiter=',', skip_header=1)
 r_over_l = 3
@@ -279,21 +279,6 @@ MACH = 1.6
 
 PROP_R = R # *3.28084
 #sig = np.asarray([data[:,0], data[:,1]]).T
-
-#sig_list = []
-#for i in range(len(angles)):
-#    start_index = i * num_points
-#    end_index = (i+1) * num_points
-#    sig = np.asarray([data[start_index:end_index,0], data[start_index:end_index,1]]).T
-#    sig_list.append(sig)
-
-
-#baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
-#body_mesh = mesh.Mesh.from_file(baseline_stl)
-#minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
-#length_body = maxx - minx
-#width_body = maxy - miny
-#print("length_body: ", length_body)
 
 
 sig_list = [np.asarray([x_new, nearfield_sig]).T]
@@ -310,20 +295,20 @@ sig = sig_list[0]
 print("sig_list shape: ", sig_list[0].shape)
 print("sig_list values: ", sig_list[0])
 #angle = (angles[j]-90)
-for i in range(10): ###
+for i in range(20): ###
     g_sig = []
     noise_level = []
     _sboom = SboomWrapper('./temp', 'sboom.exe')
     _sboom.set(mach_number=MACH,
                 altitude=altitude,
                 propagation_start= PROP_R,
-                altitude_stop= altitude-(ref_length*((i*.25)+.5)),
+                altitude_stop= altitude-(ref_length*(i+1)*.11),
                 output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
                 input_xdim=0,       ## 1 = inches, 0 = ft
                 #num_azimuthal = 1,
                 #azimuthal_angles = 0,
                 propagation_points=20000, #add zero
-                padding_points=5000
+                padding_points=4000
                 )
     _sboom.set(signature=sig, input_format=0) # set input signature and format
     sboom_results = _sboom.run(atmosphere_input=None) # run sBOOOM
@@ -332,7 +317,7 @@ for i in range(10): ###
     # np.savetxt(dp_directory + label + 'g_sig.txt', g_sig)
     noise_level_single = pyldb.perceivedloudness(g_sig_single[:, 0],
                                                 g_sig_single[:, 1],)
-    rl.append(round((ref_length/ (ref_length*((i*.25)+.5))),3))
+    rl.append(round((ref_length*(i+1)*.15 / ref_length), 3))
     g_sig.append(g_sig_single)
     noise_level.append(noise_level_single)
     g_list.append(g_sig) ###
@@ -347,12 +332,12 @@ plt.show() ###
 def animate(i):
     plt.cla()
     plt.plot(g_list[i][0][:, 0], g_list[i][0][:, 1])
-    plt.title("Ground Signature")
+    #plt.title("Ground Signature")
     plt.ylabel("dp (psf)")
     plt.xlabel("X (ft)")
     plt.ylim(-100, 100)
     plt.xlim(0, 60)
-    plt.legend([rl[i]])
+    plt.legend(["R/L: "+ str(rl[i])], loc='upper right')
     plt.tight_layout()
 
 # Create the animation object
