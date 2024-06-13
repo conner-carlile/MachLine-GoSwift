@@ -142,8 +142,8 @@ for i in range(lengths):
 
             ## Run MachLine with new deformed geometry
             report = run_machline('studies/GoSwift/input_files/test.json', run = True)
-            #report = "studies/GoSwift/results/test.json"
-            ## Skips folowing calculations if MachLine failed to generate report
+            
+            ## Skips folowing calculations if MachLine failed to run
             if report == None:
                 print()
                 print("MachLine Failed to Run.....      Skipping Iteration")
@@ -153,6 +153,8 @@ for i in range(lengths):
             ## Post processing of bump location and pressure data
             ffd_box.append([ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index])
             xg,p = pressures(p_static, density, speed_of_sound, v_inf, Mach, angles)
+
+            ## Add smoothing functuion here (Savitzky-Golay or Exponential Smoothing)
 
             x_loc.append(xg)
             nearfield_sig.append(p)
@@ -189,7 +191,7 @@ with open('studies/Goswift/results/temp_loudness.pkl', 'wb') as pickle_file:
 print()
 print("------------------------------------------")
 print("Test Case Executed Successfully!")
-print("Number of Bump Configurations: ", lengths*origins*bumps)
+print("Number of Bump Configurations: ", (lengths*origins*bumps))
 print("Skipped Cases: ", skips)
 end_time = time.time()
 execution_time = end_time - start_time
