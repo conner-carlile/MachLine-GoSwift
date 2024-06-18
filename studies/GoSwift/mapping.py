@@ -152,8 +152,8 @@ for i in range(len(x_offset)):
 
 plt.plot(x_loc, nearfield_sig)
 plt.plot(x_new, nearfield_sig)
-plt.title("stretched vs unstretched nearfield signature")
-plt.legend(['unstretched', 'stretched'])
+plt.title("Original vs Corrected Nearfield Signature")
+plt.legend(['Original', 'Corrected'])
 plt.xlabel('X (ft)')
 plt.ylabel('Pressure (Pa)')
 plt.show()
@@ -295,14 +295,14 @@ sig = sig_list[0]
 print("sig_list shape: ", sig_list[0].shape)
 print("sig_list values: ", sig_list[0])
 #angle = (angles[j]-90)
-for i in range(20): ###
+for i in range(1): ###
     g_sig = []
     noise_level = []
     _sboom = SboomWrapper('./temp', 'sboom.exe')
     _sboom.set(mach_number=MACH,
                 altitude=altitude,
                 propagation_start= PROP_R,
-                altitude_stop= altitude-(ref_length*(i+1)*.11),
+                altitude_stop= altitude-(ref_length*3),  #*(i+1)*.11),
                 output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
                 input_xdim=0,       ## 1 = inches, 0 = ft
                 #num_azimuthal = 1,
@@ -340,12 +340,12 @@ def animate(i):
     plt.legend(["R/L: "+ str(rl[i])], loc='upper right')
     plt.tight_layout()
 
-# Create the animation object
-fig = plt.figure()
-ani = animation.FuncAnimation(fig, animate, frames=len(g_list), interval=300, repeat=True)
+## Create the animation object
+#fig = plt.figure()
+#ani = animation.FuncAnimation(fig, animate, frames=len(g_list), interval=300, repeat=True)
+##
+#gif_writer = PillowWriter(fps=1)  # Set frames per second (fps)
+#ani.save("animation.gif", writer=gif_writer)
 #
-gif_writer = PillowWriter(fps=1)  # Set frames per second (fps)
-ani.save("animation.gif", writer=gif_writer)
-
-# Display the animation
-plt.show()
+## Display the animation
+#plt.show()

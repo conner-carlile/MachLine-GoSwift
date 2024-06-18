@@ -82,14 +82,6 @@ delta_index = []
 #ffd_delta_z0 = (0) 
 #ffd_delta_index = (1,1,1)  # Constant 
 
-#ffd_lengths0 =      (1117.6 / 304.8, 415.036 / 304.8, 415.036 / 304.8)
-##ffd_lengths0 =     (1,1,1)
-##ffd_origin0 =      (1117.6, 830.072, 830.072/2)##(0,-0.5,-2)  ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-#ffd_origin0 =       (5941.16668 / 304.8, -(207.518) / 304.8, -1365.0716 / 304.8)
-#ffd_num_points =    (3,3,3) ## I keep this constant
-#ffd_delta_z0 =      (0)  ## change ffd_deltz_z to ensure correct step size
-#ffd_delta_index =   (1,1,1)
-
 ### Wedge and pod start at front of body
 #ffd_lengths0 =     (1, 1.5, 1)
 ##ffd_lengths0 =    
