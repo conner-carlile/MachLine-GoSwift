@@ -294,17 +294,17 @@ if __name__ == "__main__":
     #[(5, 2.722535, 2.722535), (8.638409614562988, 0, -1.361479), (3, 3, 3), 0.5, (1, 1, 1)]
 
     origin:  (5941.16668, 0, 1250.0356)
-    length:  267.3218
+    length = 154
     #width:  32.66058
-    width = 22.96588
+    width = 85.58562
     #[(2, 1.5, 1), (21.2, 10.7223, -4.5), (3, 3, 3), -1.5, (1, 1, 1)]
-    ffd_lengths =       (3, 9.681, 2)
+    ffd_lengths =       (13,8,5)
      ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
     #ffd_origin =        (24, 11.4723-ffd_lengths[1]/2, -4.5) ## pod aand wedge
-    ffd_origin =        (.68898-ffd_lengths[0]/2, width/2 -ffd_lengths[1]/2, -ffd_lengths[2]-2) ## pod aand wedge
+    ffd_origin =        ((length-length/3)-ffd_lengths[0]/2, 10 -ffd_lengths[1]/2, -ffd_lengths[2]+1) ## pod aand wedge
     #ffd_origin =        (9.36841, 2.722535/2-ffd_lengths[1]/2, -1) ## pod aand wedge 2-2.722535/2
     ffd_num_points =    (3,3,3) ## I keep this constant
-    ffd_delta_z =       (20)    #0-3
+    ffd_delta_z =       (-2.5)    #0-3
     ffd_delta_index =   (1,1,1)  #Any other vector 
 
 
@@ -342,5 +342,5 @@ if __name__ == "__main__":
     ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    plt.show()
+    #plt.show()
            

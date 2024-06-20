@@ -18,15 +18,11 @@ Mach = input["flow"]["freestream_mach_number"]
 N_points = 1000 # @ 1 F-15 body length
 r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185
 ref_length = 134.1556 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft, jwb = 126.8062
-#altitude = 50000
-#v_inf... = atm calcs
-#p_static = 243.61
-#density = .00036392
-#speed_of_sound = 968.08
-#v_inf = 1548.928
+
 altitude = 40000 #ft
 p_static = 393.13 #lbf/ft^2
 density = .00058728
+gamma = 1.4
 speed_of_sound = 968.08 #ft/s
 v_inf = 1548.928
 PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
@@ -69,11 +65,6 @@ delta_z = []
 delta_index = []
 
 ## Define initial FFD data for loop    
-#ffd_lengths0 = (150,width_body,width_body)
-#ffd_origin0 = (65,0,-z_pos) #(0,0,0)
-#ffd_num_points = (3,3,3) # Constant?
-#ffd_delta_z0 = (0) 
-#ffd_delta_index = (1,1,1)  # Constant 
 
 ### pod by itself
 #ffd_lengths0 = (60,width_body,width_body)
@@ -100,7 +91,7 @@ ffd_delta_z0 =     (0)
 ffd_delta_index =  (1,1,1)
 
 
-print("origin: ", ffd_origin0)
+#print("origin: ", ffd_origin0)
 print("length: ", length_body)
 print("width: ", maxy-miny)
 
@@ -144,7 +135,7 @@ for i in range(lengths):
             
             ## Post processing of bump location and pressure data
             ffd_box.append([ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index])
-            xg,p = pressures(p_static, density, speed_of_sound, v_inf, Mach, angles)
+            xg,p = pressures(gamma, p_static, density, speed_of_sound, v_inf, Mach, angles)
 
             ## Add smoothing functuion here (Savitzky-Golay or Exponential Smoothing)
 
