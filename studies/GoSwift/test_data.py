@@ -57,7 +57,7 @@ plt.plot(x_loc[0],nearfield_sig[0])
 plt.title("Nearfield Signature (raw)")
 plt.ylabel("dp / P")
 plt.xlabel("X (ft)")
-##plt.xlim(80,115)
+plt.xlim(80,115)
 #ax[0].set_ylim(-0.1,0.15, 0.5)
 plt.show()
 
