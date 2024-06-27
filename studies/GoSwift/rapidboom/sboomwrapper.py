@@ -94,10 +94,10 @@ class SboomWrapper:
                                   ["nonlinear", True],
                                   ["thermoviscous", True],
                                   ["relaxation", True],
-                                  ["step_size", 0.001], #was 0.01
+                                  ["step_size", 0.0001], #was 0.001
                                   ["reflection_factor", 1.9],
-                                  ["resampled_points", 1000],
-                                  ["padding_tolerance", 0.001],
+                                  ["resampled_points", 2000], # was 1000
+                                  ["padding_tolerance", 0.0001],# was .001
                                   ["input_tolerance", 1e-6],
                                   ["input_format", 0],
                                   ["altitude_stop", None],
@@ -108,7 +108,7 @@ class SboomWrapper:
                                   ["input_humidity", 0],
                                   ["heading_angle", 0.],
                                   ["climb_angle", 0.],
-                                  ["output_format", 0],   ############
+                                  ["output_format", 1],   ############
                                   ["input_xdim", 1],
                                   ["adjoint", 0],
                                   ["objective", 4],

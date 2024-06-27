@@ -45,15 +45,15 @@ print("x_loc: ", x_loc)
 sav = savgol_filter(nearfield_sig, 100, 3)
 exp = exponential_smoothing(nearfield_sig, 0.05)
 
-plt.plot(x_loc, nearfield_sig)
-plt.title('Raw Data')
-plt.show()
-plt.plot(x_loc, sav)
-plt.title('Savitzky-Golay Filter')
-plt.show()
-plt.plot(x_loc, exp)
-plt.title('Exponential Smoothing')
-plt.show()
+#plt.plot(x_loc, nearfield_sig)
+#plt.title('Raw Data')
+#plt.show()
+#plt.plot(x_loc, sav)
+#plt.title('Savitzky-Golay Filter')
+#plt.show()
+#plt.plot(x_loc, exp)
+#plt.title('Exponential Smoothing')
+#plt.show()
 
 sav_exp = savgol_filter(exp, 100, 3)
 exp_sav = exponential_smoothing(sav, 0.05)
@@ -83,6 +83,7 @@ x_2 = [4.198692441,
 47.96094202,
 50.18237601]
 
+## Observed beta angles
 beta = [0.7343305552,
 0.845666837,
 0.845666837,
@@ -91,14 +92,32 @@ beta = [0.7343305552,
 0.9347043834,
 0.5951635418,
 0.5951635418,
-0.7,
-0.775,
-0.775,
-0.775,
-0.775,
-0.675,
-0.675,
+1.006472864,
+1.064990429,
+0.9347043834,
+0.9347043834,
+0.9347043834,
+1.006472864,
+1.113307846,
 0.5951635418]
+
+## Manually corrected beta angles
+#beta = [0.7343305552,
+#0.845666837,
+#0.845666837,
+#0.845666837,
+#0.7343305552,
+#0.9347043834,
+#0.5951635418,
+#0.5951635418,
+#0.7,
+#0.775,
+#0.775,
+#0.775,
+#0.775,
+#0.675,
+#0.675,
+#0.5951635418]
 
 nearfield_sig = exp_sav
 
@@ -113,12 +132,6 @@ for value2 in x_2:
 #plt.plot(x_2, nodes_x)
 #plt.title("nodes")
 #plt.show()
-
-
-#print(x_loc[0][441], nearfield_sig[0][441])
-#
-#print("len(nodes): ", len(nodes))
-#print("len(x_2): ", len(x_2))
 
 
 ## Interpolate angles based on the nodes
@@ -195,85 +208,10 @@ plt.xlabel('X (ft)')
 plt.ylabel('Pressure (Pa)')
 plt.show()
 
-### Pod Surface Pressure Graphs
-#bot_pod_data = []
-#with open('studies/Goswift/results/Untitled spreadsheet - Sheet8 (4).csv', 'r') as csvfile:
-#    reader = csv.reader(csvfile)
-#    next(reader)  # Skip the header row if it exists
-#    for row in reader:
-#        x_bot = float(row[0])
-#        p_bot = float(row[1])
-#        bot_pod_data.append((x_bot, p_bot))
-#
-#pod_uns3d = []
-#with open('studies/Goswift/results/Untitled spreadsheet - Sheet7 (6).csv', 'r') as csvfile:
-#    reader = csv.reader(csvfile)
-#    next(reader)  # Skip the header row if it exists
-#    for row in reader:
-#        x_pod = float(row[0])*3.281
-#        p_pod = float(row[1])
-#        pod_uns3d.append((x_pod, p_pod))
-#
-#x_rev = [x for x, _ in pod_uns3d]
-#x_rev.reverse()
-#plt.scatter([x for x, _ in bot_pod_data], [p for _, p in bot_pod_data], s=.4, color='red')
-#plt.plot(x_rev, [p for _, p in pod_uns3d])
-#plt.legend(['MachLine', 'UNS3D'])
-#plt.xlabel('X (ft)')
-#plt.ylabel('Pressure (Pa)')
-##plt.plot([x for x, _ in pod_uns3d], [p for _, p in pod_uns3d])
-#plt.show()
-#
-### Pod Surface Pressure Graphs
-#podT_mach = []
-#with open('studies/Goswift/results/Untitled spreadsheet - Sheet9 (1).csv', 'r') as csvfile:
-#    reader = csv.reader(csvfile)
-#    next(reader)  # Skip the header row if it exists
-#    for row in reader:
-#        x_t_m = float(row[0])
-#        p_t_m = float(row[1])
-#        podT_mach.append((x_t_m, p_t_m))
-#
-#
-#podT_uns = []
-#with open('studies/Goswift/results/Untitled spreadsheet - Sheet10 (1).csv', 'r') as csvfile:
-#    reader = csv.reader(csvfile)
-#    next(reader)  # Skip the header row if it exists
-#    for row in reader:
-#        x_t_uns = float(row[0])
-#        p_t_uns = float(row[1])
-#        podT_uns.append((x_t_uns, p_t_uns))
-#        #print(x_t_uns, p_t_uns)
-#
-#plt.scatter([x for x, _ in podT_mach], [p for _, p in podT_mach], s=.4, color='red')
-#plt.plot([x for x, _ in podT_uns], [p for _, p in podT_uns])
-#plt.legend(['MachLine', 'UNS3D'])
-#plt.xlabel('X (ft)')
-#plt.ylabel('Pressure (Pa)')
-#plt.show()
-
-
-#podT_uns = []
-#with open('studies/GoSwift/results/Super-Inclined Panel Study - NV Surface Baseline.csv', 'r') as csvfile:
-#    reader = csv.reader(csvfile)
-#    next(reader)  # Skip the header row if it exists
-#    for row in reader:
-#        x_t_uns = float(row[0])
-#        p_t_uns = float(row[1])
-#        podT_uns.append((x_t_uns, p_t_uns))
-#        #print(x_t_uns, p_t_uns)
-#
-#plt.scatter([x for x, _ in podT_uns], [p for _, p in podT_uns], s=1, color='blue')
-##plt.plot([x for x, _ in podT_uns], [p for _, p in podT_uns])
-##plt.legend(['MachLine', 'UNS3D'])
-#plt.title('Surface Pressure (raw)')
-#plt.xlabel('X (ft)')
-#plt.ylabel('dp/p')
-#plt.show()
 
 #data = np.genfromtxt('studies/GoSwift/results/off_body_pressure.csv', delimiter=',', skip_header=1)
 r_over_l = 3
-ref_length = 42.65
+ref_length = 42.65 # ft
 altitude = 40000
 MACH = 1.6
 
@@ -303,8 +241,8 @@ for i in range(1): ###
                 altitude=altitude,
                 propagation_start= PROP_R,
                 altitude_stop= altitude-(ref_length*3),  #*(i+1)*.11),
-                output_format=0,  ######## was 0        ########### 1 = ft vs dp/P
-                input_xdim=0,       ## 1 = inches, 0 = ft
+                output_format=0,    ## 0 =  regular time (ms) vs. dp (psf)  ,   1 = X(feet) vs. dp/P
+                input_xdim=0,       ## 0 = ft, 1 = in, 2 = m
                 #num_azimuthal = 1,
                 #azimuthal_angles = 0,
                 propagation_points=20000, #add zero
@@ -325,6 +263,7 @@ for i in range(1): ###
 ###########################################################
 
 plt.plot(g_sig[0][:,0], g_sig[0][:,1]) ###
+#plt.xlim(.007,.055)
 plt.show() ###
 
 
