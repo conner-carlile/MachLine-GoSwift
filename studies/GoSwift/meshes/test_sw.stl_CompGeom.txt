@@ -1,7 +1,7 @@
 ...Comp Geom...
 3 Num Comps
 5 Total Num Meshes
-127248 Total Num Tris
+140784 Total Num Tris
 
 Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
  3095.180   1247.594   5650.731   2424.386  fuselage       
