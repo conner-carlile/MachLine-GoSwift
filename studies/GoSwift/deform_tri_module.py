@@ -301,7 +301,7 @@ if __name__ == "__main__":
     ffd_lengths =       (13,8,5)
      ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
     #ffd_origin =        (24, 11.4723-ffd_lengths[1]/2, -4.5) ## pod aand wedge
-    ffd_origin =        ((length-length/2)-ffd_lengths[0]/2, -ffd_lengths[1]/2, -ffd_lengths[2]+1) ## pod aand wedge
+    ffd_origin =        ((length-length/2)-ffd_lengths[0]/2, -ffd_lengths[1]/2, -ffd_lengths[2]) ## pod aand wedge
     #ffd_origin =        (9.36841, 2.722535/2-ffd_lengths[1]/2, -1) ## pod aand wedge 2-2.722535/2
     ffd_num_points =    (3,3,3) ## I keep this constant
     ffd_delta_z =       (-5)    #0-3
