@@ -7,6 +7,8 @@ from off_body import *
 from deform_tri_module import *
 from ambiance import Atmosphere
 import trimesh
+from scipy.signal import savgol_filter
+from exponentalSmoothing import exponential_smoothing
 start_time = time.time()
 
 ## Input Parameters
@@ -138,6 +140,9 @@ for i in range(lengths):
             xg,p = pressures(gamma, p_static, density, speed_of_sound, v_inf, Mach, angles)
 
             ## Add smoothing functuion here (Savitzky-Golay or Exponential Smoothing)
+            plt.plot(xg,p)
+            p = savgol_filter(p, 50, 3)
+            plt.plot(xg,p)
 
             x_loc.append(xg)
             nearfield_sig.append(p)
