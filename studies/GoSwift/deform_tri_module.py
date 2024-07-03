@@ -314,7 +314,7 @@ if __name__ == "__main__":
 
     ## The following is only to plot the original and deformed geometries and does not effect results
 
-    ##original mesh
+    ## original mesh
     print(vert_coords)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -323,7 +323,7 @@ if __name__ == "__main__":
     y = vert_coords[:,1]
     z = vert_coords[:,2]
     ax.scatter(x,y,z)
-    #deformed mesh
+    ## deformed mesh
     a = deformed_mesh_points[:,0]
     b = deformed_mesh_points[:,1]
     c = deformed_mesh_points[:,2]
@@ -333,7 +333,7 @@ if __name__ == "__main__":
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     ax.set_aspect("equal")
-    # plot ffd box corners
+    ## plot ffd box corners
     ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
     ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
     ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
