@@ -1,0 +1,14 @@
+# VSPGEOM Tag Key File
+C:/Users/aerolab/Documents/GitHub/MachLine-GoSwift/studies/GoSwift/meshes/wm_N+2_VSPGeom.vspgeom
+9
+
+# tag#,geom#,surf#,gname,gid,ssname1,ssname2,...,ssid1,ssid2,...
+1,2,0,fuselage_S,ELBWXSGUMI
+2,0,0,wing_S,TBOUQIUJFI
+3,0,1,wing_S,TBOUQIUJFI
+4,1,0,htail_S,LDLJSYKHIT
+5,1,1,htail_S,LDLJSYKHIT
+1006,3,1_Wake,wing1_Wake,
+1007,3,2_Wake,wing2_Wake,
+1008,3,l1_Wake,htail1_Wake,
+1009,3,l2_Wake,htail2_Wake,
