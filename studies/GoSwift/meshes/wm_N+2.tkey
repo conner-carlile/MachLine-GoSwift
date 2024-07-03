@@ -1,9 +1,13 @@
 # VSP Tag Key File
 C:/Users/aerolab/Documents/GitHub/MachLine-GoSwift/studies/GoSwift/meshes/wm_N+2.tkey
-5
+9
 
 1,fuselage_S_Surf0
 2,wing_S_Surf0
 3,wing_S_Surf1
 4,htail_S_Surf0
 5,htail_S_Surf1
+1006,wing1_Wake
+1007,wing2_Wake
+1008,htail1_Wake
+1009,htail2_Wake
