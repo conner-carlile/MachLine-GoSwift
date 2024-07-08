@@ -14,7 +14,7 @@
         }
     },
     "solver": {
-        "formulation": "dirichlet-source-free",
+        "formulation": "dirichlet-morino",
         "run_checks": false,
         "matrix_solver": "GMRES",
         "control_point_offset": 1.0e-08

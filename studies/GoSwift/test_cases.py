@@ -19,7 +19,7 @@ Mach = input["flow"]["freestream_mach_number"]
 
 N_points = 1000 # @ 1 F-15 body length
 r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185
-ref_length = 134.1556 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft, jwb = 126.8062
+ref_length = 126.80629 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft, jwb = 126.8062
 
 altitude = 40000 #ft
 p_static = 393.13 #lbf/ft^2
