@@ -22,19 +22,6 @@ with open('studies/Goswift/results/temp_loudness.pkl', 'rb') as pickle_file:
     loudness = pickle.load(pickle_file)
 
 
-#### ## Find quietest configuration 0 azimuth
-#### print(loudness)
-#### set = 0
-#### min = min(loudness)
-#### max = max(loudness)
-#### print(len(loudness))
-#### print("min: ", min)
-#### print("max: ", max)
-#### for i in range(len(loudness)):
-####     if loudness[i] == min:
-####         set = i
-####         print("i for lowest: ", i)
-
 
 ## Find quietest configuration multiple azimuth
 min = float('inf')
@@ -47,8 +34,15 @@ for iteration in loudness:
         min = center_value
         min_zero_azimuth = iteration
 
-print("The iteration with the smallest center number is:", min_zero_azimuth)
-print("The smallest center number is:", min)
+for i in range(len(loudness)):
+    if loudness[i] == min_zero_azimuth:
+        print("The iteration with the smallest center number is:", i)
+        print("The smallest center number is:", min)
+        break
+#print("The iteration with the smallest center number is:", min_zero_azimuth)
+#print("The smallest center number is:", min)
+
+break
 
 
 
