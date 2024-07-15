@@ -10,6 +10,52 @@ import matplotlib.pyplot as plt
 from rapidboom.sboomwrapper import SboomWrapper
 import pyldb
 
+def set_json(input_file, freestream_velocity, gamma, mach, formulation):
+    """Writes input JSON file for MachLine"""
+    
+    data = {
+        "flow": {
+            "freestream_velocity": freestream_velocity,
+            "gamma": gamma,
+            "freestream_mach_number": mach
+        },
+        "geometry": {
+            "file": "studies/GoSwift/meshes/test_deformed.tri",
+            "spanwise_axis": "-y",
+            "wake_model": {
+                "wake_present": False,
+                "append_wake": False,
+                "trefftz_distance": 20.0
+            }
+        },
+        "solver": {
+            "formulation": formulation,
+            "run_checks": False,
+            "matrix_solver": "GMRES"
+        },
+        "post_processing": {
+            "pressure_rules": {
+                "incompressible": False,
+                "isentropic": True,
+                "second-order": False
+            }
+        },
+        "output": {
+            "verbose": True,
+            "body_file": "studies/GoSwift/results/test.vtk",
+            "report_file": "studies/Goswift/results/test_sw.json",
+            "offbody_points": {
+                "points_file": "studies/Goswift/off_body/off_body_sheet.csv",
+                "output_file": "studies/Goswift/results/off_body_sample.csv"
+            }
+        }
+    }
+    
+    with open(input_file, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+    
+    return
+
 def find_mins(obj):
     """ Reads in stl mesh file and finds first (x,y,z) point for centerline and length calcs"""
 
@@ -336,9 +382,10 @@ if __name__ == "__main__":
     baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
 
     input_file = "studies/GoSwift/input_files/test.json"
-
-    input = json.loads(open(input_file).read())
-    Mach = input["flow"]["freestream_mach_number"]
+    mach = 1.6
+    #input = json.loads(open(input_file).read())
+    #Mach = input["flow"]["freestream_mach_number"]
+    set_json(input_file, [1548.928,0,0], 1.4, mach)
 
     N_points = 1000
     r_over_l = 3
@@ -353,13 +400,13 @@ if __name__ == "__main__":
 
     body_mesh = mesh.Mesh.from_file(baseline_stl)
     minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
-    x0, x, xf,y, L, points = off_body(N_points, Mach, r_over_l)
+    x0, x, xf,y, L, points = off_body(N_points, mach, r_over_l)
     print("L: ", L)
     print(miny)
     print(maxy)
     #off_body(N_points,Mach,r_over_l)
-    angles = off_body_sheet(N_points, Mach, r_over_l, num_azimuth)
+    angles = off_body_sheet(N_points, mach, r_over_l, num_azimuth)
 
     #xg,p = pressures(243.61, .00036392, 968.08, 1548.928, Mach ) 
-
+    
     print(angles)

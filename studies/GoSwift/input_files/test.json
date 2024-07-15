@@ -1,6 +1,10 @@
 {
     "flow": {
-        "freestream_velocity": [1548.928,0,0],
+        "freestream_velocity": [
+            1546.7985325591358,
+            0.0,
+            81.06427608969122
+        ],
         "gamma": 1.4,
         "freestream_mach_number": 1.6
     },
@@ -16,8 +20,7 @@
     "solver": {
         "formulation": "dirichlet-morino",
         "run_checks": false,
-        "matrix_solver": "GMRES",
-        "control_point_offset": 1.0e-08
+        "matrix_solver": "GMRES"
     },
     "post_processing": {
         "pressure_rules": {

@@ -42,7 +42,6 @@ for i in range(len(loudness)):
 #print("The iteration with the smallest center number is:", min_zero_azimuth)
 #print("The smallest center number is:", min)
 
-break
 
 
 

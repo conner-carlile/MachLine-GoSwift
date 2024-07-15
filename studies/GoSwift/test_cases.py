@@ -14,21 +14,42 @@ start_time = time.time()
 ## Input Parameters
 input_file = "studies/GoSwift/input_files/test.json"
 
-input = json.loads(open(input_file).read())
-Mach = input["flow"]["freestream_mach_number"]
-
-N_points = 1000 # @ 1 F-15 body length
-r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185
-ref_length = 126.80629 #pod = 21.6533 ft, wedge = 42.65092 ft, F-15 = 64 ft, jwb = 126.8062
-
 altitude = 40000 #ft
-p_static = 393.13 #lbf/ft^2
-density = .00058728
+Mach = 1.6
+r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185 
+N_points = 1000 # @ 1 F-15 body length
 gamma = 1.4
-speed_of_sound = 968.08 #ft/s
-v_inf = 1548.928
-PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
-num_azimuth = 0 
+num_azimuth = 0
+angle_of_attack = 0 #degrees
+formulation = "dirichlet-morino"
+
+## Atmospheric Parameters
+atmosphere = Atmosphere(altitude*0.3048)
+p_static = atmosphere.pressure[0] * 0.020885434273039 #Pa to lbf/ft^2 conversion factor
+density = atmosphere.density[0] * 0.00194032 # kg/m^3 to slugs/ft^3 conversion factor
+speed_of_sound = atmosphere.speed_of_sound[0] * 3.28084 #m/s to ft/s conversion factor
+v_inf = Mach*speed_of_sound
+
+print("Mach: ", Mach)
+print("Altitude: ", altitude)
+print("Static Pressure: ", p_static)
+print("Density: ", density)
+print("Gamma: ", gamma)
+print("Speed of Sound: ", speed_of_sound)
+print("V_inf: ", v_inf)
+
+#p_static = 393.13 #lbf/ft^2
+#density = .00058728
+#gamma = 1.4
+#speed_of_sound = 968.08 #ft/s
+#v_inf = 1548.928
+
+##AOA Calculations
+x = np.cos(np.radians(angle_of_attack))*v_inf
+y = 0.0
+z = np.sin(np.radians(angle_of_attack))*v_inf
+
+set_json(input_file, [x,y,z], gamma, Mach, formulation)
 
 
 ## Initialize storage list for FFD Box, Nearfield Sig, Ground Sig, and Loudness
@@ -48,12 +69,16 @@ baseline_tri = "studies/GoSwift/meshes/test_sw.tri"
 
 ## Create CSV file for off body points
 body_mesh = mesh.Mesh.from_file(baseline_stl)
-minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh)
-#off_body(N_points,MACH,r_over_l) 
+minx, miny, minz, maxx, maxy, maxz, y_pos, z_pos = find_mins(body_mesh) 
 angles = off_body_sheet(N_points, Mach, r_over_l, num_azimuth)  ### angle stuff
 
 length_body = maxx - minx
 width_body = maxy - miny
+
+## refrence length for sBOOM
+ref_length = length_body
+PROP_R = r_over_l*ref_length #*3.28084  ##### add if mesh is in meters
+
 
 ## Convert baseline .stl file to .tri file for FFD
 stl_to_tri(baseline_stl, baseline_tri)
