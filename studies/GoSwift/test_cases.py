@@ -16,11 +16,12 @@ input_file = "studies/GoSwift/input_files/test.json"
 
 altitude = 40000 #ft
 Mach = 1.6
-r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185 
-N_points = 1000 # @ 1 F-15 body length
+r_over_l = 1.5 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185 
+N_points = 900 # @ 1 F-15 body length
 gamma = 1.4
 num_azimuth = 0
 angle_of_attack = 0 #degrees
+solver = "QRUP"
 formulation = "dirichlet-morino"
 
 ## Atmospheric Parameters
@@ -31,12 +32,14 @@ speed_of_sound = atmosphere.speed_of_sound[0] * 3.28084 #m/s to ft/s conversion 
 v_inf = Mach*speed_of_sound
 
 print("Mach: ", Mach)
+print("R/L: ", r_over_l)
 print("Altitude: ", altitude)
 print("Static Pressure: ", p_static)
 print("Density: ", density)
 print("Gamma: ", gamma)
 print("Speed of Sound: ", speed_of_sound)
 print("V_inf: ", v_inf)
+print()
 
 #p_static = 393.13 #lbf/ft^2
 #density = .00058728
@@ -49,7 +52,7 @@ x = np.cos(np.radians(angle_of_attack))*v_inf
 y = 0.0
 z = np.sin(np.radians(angle_of_attack))*v_inf
 
-set_json(input_file, [x,y,z], gamma, Mach, formulation)
+set_json(input_file, [x,y,z], gamma, Mach, formulation, solver)
 
 
 ## Initialize storage list for FFD Box, Nearfield Sig, Ground Sig, and Loudness
@@ -165,9 +168,9 @@ for i in range(lengths):
             xg,p = pressures(gamma, p_static, density, speed_of_sound, v_inf, Mach, angles)
 
             ## Add smoothing functuion here (Savitzky-Golay or Exponential Smoothing)
-            plt.plot(xg,p)
-            p = savgol_filter(p, 50, 3)
-            plt.plot(xg,p)
+            #plt.plot(xg,p)
+            #p = savgol_filter(p, 50, 3)
+            #plt.plot(xg,p)
 
             x_loc.append(xg)
             nearfield_sig.append(p)

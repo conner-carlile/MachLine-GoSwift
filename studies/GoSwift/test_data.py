@@ -46,11 +46,21 @@ for i in range(len(loudness)):
 
 
 ## Plotting nearfield signature and ground signature
+for i in range (len(nearfield_sig)):
+    if nearfield_sig[i] ==0:
+        continue
+    else:
+        xlim = (x_loc[0][i]) - 1
+        print(xlim)
+        print(x_loc[0][i])
+        break
+
+    
 plt.plot(x_loc[0],nearfield_sig[0])
 plt.title("Nearfield Signature (raw)")
 plt.ylabel("dp / P")
 plt.xlabel("X (ft)")
-plt.xlim(80,115)
+plt.xlim(xlim)
 #ax[0].set_ylim(-0.1,0.15, 0.5)
 plt.show()
 

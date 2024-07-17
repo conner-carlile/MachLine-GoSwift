@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from rapidboom.sboomwrapper import SboomWrapper
 import pyldb
 
-def set_json(input_file, freestream_velocity, gamma, mach, formulation):
+def set_json(input_file, freestream_velocity, gamma, mach, formulation,solver):
     """Writes input JSON file for MachLine"""
     
     data = {
@@ -31,7 +31,7 @@ def set_json(input_file, freestream_velocity, gamma, mach, formulation):
         "solver": {
             "formulation": formulation,
             "run_checks": False,
-            "matrix_solver": "GMRES"
+            "matrix_solver": solver
         },
         "post_processing": {
             "pressure_rules": {
