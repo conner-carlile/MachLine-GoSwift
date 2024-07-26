@@ -10,6 +10,7 @@
     },
     "geometry": {
         "file": "studies/GoSwift/meshes/test_deformed.tri",
+        "mirror_about": "xz",
         "spanwise_axis": "-y",
         "wake_model": {
             "wake_present": false,
@@ -32,6 +33,7 @@
     "output": {
         "verbose": true,
         "body_file": "studies/GoSwift/results/test.vtk",
+        "mirrored_body_file": "studies/GoSwift/results/test_mirrored.vtk",
         "report_file": "studies/Goswift/results/test_sw.json",
         "offbody_points": {
             "points_file": "studies/Goswift/off_body/off_body_sheet.csv",

@@ -24,11 +24,17 @@ angle_of_attack = 0 #degrees
 solver = "QRUP"
 formulation = "dirichlet-morino"
 
+ffd_lengths0 =     (1, 1, 1)
+ffd_origin0 =      (0,0,0)
+ffd_num_points =   (3,3,3)
+ffd_delta_z0 =     (0)
+ffd_delta_index =  (1,1,1)
+
 ## Atmospheric Parameters
 atmosphere = Atmosphere(altitude*0.3048)
-p_static = atmosphere.pressure[0] * 0.020885434273039 #Pa to lbf/ft^2 conversion factor
-density = atmosphere.density[0] * 0.00194032 # kg/m^3 to slugs/ft^3 conversion factor
-speed_of_sound = atmosphere.speed_of_sound[0] * 3.28084 #m/s to ft/s conversion factor
+p_static = atmosphere.pressure[0] * 0.020885434273039   # Pa to lbf/ft^2 conversion factor
+density = atmosphere.density[0] * 0.00194032            # kg/m^3 to slugs/ft^3 conversion factor
+speed_of_sound = atmosphere.speed_of_sound[0] * 3.28084 # m/s to ft/s conversion factor
 v_inf = Mach*speed_of_sound
 
 print("Mach: ", Mach)
@@ -66,8 +72,8 @@ loudness = []
 
 
 ## Import Undeformed Test Geometry
-baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
-baseline_tri = "studies/GoSwift/meshes/test_sw.tri"
+baseline_stl = "studies/GoSwift/meshes/test.stl"
+baseline_tri = "studies/GoSwift/meshes/test.tri"
 
 
 ## Create CSV file for off body points
@@ -112,13 +118,13 @@ delta_index = []
 #ffd_delta_index =  (1,1,1)
 
 
-#ffd_lengths0 =     (3, 2.5, 1) ## pod and wedge
-#ffd_origin0 =      (24, 11.4723-ffd_lengths0[1]/2, -4.5) ## pod and wedge
-ffd_lengths0 =     (1, 1, 1)
-ffd_origin0 =      (0,0,0)
-ffd_num_points =   (3,3,3)
-ffd_delta_z0 =     (0)
-ffd_delta_index =  (1,1,1)
+##ffd_lengths0 =     (3, 2.5, 1) ## pod and wedge
+##ffd_origin0 =      (24, 11.4723-ffd_lengths0[1]/2, -4.5) ## pod and wedge
+#ffd_lengths0 =     (1, 1, 1)
+#ffd_origin0 =      (0,0,0)
+#ffd_num_points =   (3,3,3)
+#ffd_delta_z0 =     (0)
+#ffd_delta_index =  (1,1,1)
 
 
 #print("origin: ", ffd_origin0)

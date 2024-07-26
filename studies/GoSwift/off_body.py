@@ -21,6 +21,7 @@ def set_json(input_file, freestream_velocity, gamma, mach, formulation,solver):
         },
         "geometry": {
             "file": "studies/GoSwift/meshes/test_deformed.tri",
+            "mirror_about" : "xz",
             "spanwise_axis": "-y",
             "wake_model": {
                 "wake_present": False,
@@ -43,7 +44,8 @@ def set_json(input_file, freestream_velocity, gamma, mach, formulation,solver):
         "output": {
             "verbose": True,
             "body_file": "studies/GoSwift/results/test.vtk",
-            "report_file": "studies/Goswift/results/test_sw.json",
+            "mirrored_body_file" : "studies/GoSwift/results/test_mirrored.vtk",
+            "report_file": "studies/Goswift/results/test.json",
             "offbody_points": {
                 "points_file": "studies/Goswift/off_body/off_body_sheet.csv",
                 "output_file": "studies/Goswift/results/off_body_sample.csv"
