@@ -1,27 +1,25 @@
 {
     "flow": {
         "freestream_velocity": [
-            1548.9212753348834,
+            1740.1483491290276,
             0.0,
-            0.0
+            91.19731060090261
         ],
         "gamma": 1.4,
-        "freestream_mach_number": 1.6
+        "freestream_mach_number": 1.8
     },
     "geometry": {
         "file": "studies/GoSwift/meshes/test_deformed.tri",
-        "mirror_about": "xz",
-        "spanwise_axis": "-y",
         "wake_model": {
             "wake_present": false,
             "append_wake": false,
-            "trefftz_distance": 20.0
+            "trefftz_distance": 200.0
         }
     },
     "solver": {
         "formulation": "dirichlet-morino",
         "run_checks": false,
-        "matrix_solver": "QRUP"
+        "matrix_solver": "GMRES"
     },
     "post_processing": {
         "pressure_rules": {
@@ -33,8 +31,7 @@
     "output": {
         "verbose": true,
         "body_file": "studies/GoSwift/results/test.vtk",
-        "mirrored_body_file": "studies/GoSwift/results/test_mirrored.vtk",
-        "report_file": "studies/Goswift/results/test_sw.json",
+        "report_file": "studies/Goswift/results/test.json",
         "offbody_points": {
             "points_file": "studies/Goswift/off_body/off_body_sheet.csv",
             "output_file": "studies/Goswift/results/off_body_sample.csv"

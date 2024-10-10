@@ -15,20 +15,32 @@ start_time = time.time()
 input_file = "studies/GoSwift/input_files/test.json"
 
 altitude = 40000 #ft
-Mach = 1.6
-r_over_l = 1.5 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185 
-N_points = 900 # @ 1 F-15 body length
+Mach = 1.8
+r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185 
+N_points = 1500 # @ 1 F-15 body length
 gamma = 1.4
 num_azimuth = 0
-angle_of_attack = 0 #degrees
-solver = "QRUP"
-formulation = "dirichlet-morino"
+angle_of_attack = 3 # degrees
+solver = "GMRES" #"BSOR"
+formulation = "dirichlet-morino" #"neumann-mass-flux" #
+mirror = False ## add to json write function
+wake = False ## add to json write function
 
-ffd_lengths0 =     (1, 1, 1)
-ffd_origin0 =      (0,0,0)
+## Half
+#ffd_lengths0 =     (13,6,7)#(7, 5, 7)
+#ffd_origin0 =      (94.5, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
+#ffd_num_points =   (3,3,3)
+#ffd_delta_z0 =     (-.75) #(-1.7)
+#ffd_delta_index =  (1,1,1)
+
+## N+2 Zone 1
+ffd_lengths0 =     (6,6,7)#(7, 5, 7)
+ffd_origin0 =      (50, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
 ffd_num_points =   (3,3,3)
-ffd_delta_z0 =     (0)
+ffd_delta_z0 =     (-.25) #(-1.7)
 ffd_delta_index =  (1,1,1)
+lengths, origins, bumps = (1,21,3)
+
 
 ## Atmospheric Parameters
 atmosphere = Atmosphere(altitude*0.3048)
@@ -53,7 +65,7 @@ print()
 #speed_of_sound = 968.08 #ft/s
 #v_inf = 1548.928
 
-##AOA Calculations
+## AOA Calculations
 x = np.cos(np.radians(angle_of_attack))*v_inf
 y = 0.0
 z = np.sin(np.radians(angle_of_attack))*v_inf
@@ -132,20 +144,27 @@ print("length: ", length_body)
 print("width: ", maxy-miny)
 
 #lengths, origins, bumps = (10,int(length_body/12),4)
-lengths, origins, bumps = (1,1,1)
+#lengths, origins, bumps = (1,1,1)
 #lengths, origins, bumps = (4, int(length_body - ffd_lengths0[0]), 4) ## moves along entire mesh keeping entire ffd box on mesh (not really true)
 "'####### Find a way to not check Zero deformation except for the first time #######'"
+
+## Clear pickle files before running test cases
+##clear_pickle_file('studies/Goswift/results/temp_ffd_box.pkl')
+#clear_pickle_file('studies/Goswift/results/temp_x_loc.pkl')
+#clear_pickle_file('studies/Goswift/results/temp_nearfield.pkl')
+#clear_pickle_file('studies/Goswift/results/temp_ground.pkl')
+#clear_pickle_file('studies/Goswift/results/temp_loudness.pkl')
 
 ## Test Case Loops
 iteration = 0
 skips = 0
 for i in range(lengths):
-    ffd_lengths = (ffd_lengths0[0] + (i*2), ffd_lengths0[1], ffd_lengths0[2])
+    ffd_lengths = (ffd_lengths0[0] + (0), ffd_lengths0[1], ffd_lengths0[2]) #(i+2)
     for j in range(origins):
         #ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
-        ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1], ffd_origin0[2])
+        ffd_origin = (ffd_origin0[0] + (j*1), ffd_origin0[1], ffd_origin0[2]) #(j)
         for k in range(bumps):
-            ffd_delta_z = (ffd_delta_z0 - (k*3.5)) #####!!!!!!!!  was 0.5
+            ffd_delta_z = (ffd_delta_z0 - (k*.25)) #####!!!!!!!!  was 0.5, 3.5
             
             ## Skip iteration if FFD box is too big for body
             if ffd_lengths[0] > length_body - ffd_origin[0]:
@@ -186,29 +205,48 @@ for i in range(lengths):
             ground_sig.append(g_sig)
             loudness.append(noise_level)
 
+
+            print()
+            print("Writing Test Case Data to Files....")
+        
+            # Append the data to each pickle file after each iteration
+            #append_to_pickle('studies/Goswift/results/temp_ffd_box.pkl', list(ffd_box))
+            #append_to_pickle('studies/Goswift/results/temp_x_loc.pkl', list(xg))
+            #append_to_pickle('studies/Goswift/results/temp_nearfield.pkl', list(p))
+            #append_to_pickle('studies/Goswift/results/temp_ground.pkl', list(g_sig))
+            #append_to_pickle('studies/Goswift/results/temp_loudness.pkl', list(noise_level))
+
+            #### write all data to seperate pickle files for later data handling
+            with open('studies/Goswift/results/temp_ffd_box.pkl', 'wb') as pickle_file:
+                pickle.dump(ffd_box, pickle_file)
+            with open('studies/Goswift/results/temp_x_loc.pkl', 'wb') as pickle_file:
+                pickle.dump(x_loc, pickle_file)
+            with open('studies/Goswift/results/temp_nearfield.pkl', 'wb') as pickle_file:
+                pickle.dump(nearfield_sig, pickle_file)
+            with open('studies/Goswift/results/temp_ground.pkl', 'wb') as pickle_file:
+                pickle.dump(ground_sig, pickle_file)
+            with open('studies/Goswift/results/temp_loudness.pkl', 'wb') as pickle_file:
+                pickle.dump(loudness, pickle_file)
+
             iteration += 1
             print()
             print("Iteration: ", iteration, "/", lengths*origins*bumps)
             print()
 
-print()
-print("Writing Test Case Data to Files....")
+#print()
+#print("Writing Test Case Data to Files....")
 
-### write all data to seperate pickle files for later data handling
-with open('studies/Goswift/results/temp_ffd_box.pkl', 'wb') as pickle_file:
-    pickle.dump(ffd_box, pickle_file)
-
-with open('studies/Goswift/results/temp_x_loc.pkl', 'wb') as pickle_file:
-    pickle.dump(x_loc, pickle_file)
-
-with open('studies/Goswift/results/temp_nearfield.pkl', 'wb') as pickle_file:
-    pickle.dump(nearfield_sig, pickle_file)
-
-with open('studies/Goswift/results/temp_ground.pkl', 'wb') as pickle_file:
-    pickle.dump(ground_sig, pickle_file)
-
-with open('studies/Goswift/results/temp_loudness.pkl', 'wb') as pickle_file:
-    pickle.dump(loudness, pickle_file)
+#### write all data to seperate pickle files for later data handling
+#with open('studies/Goswift/results/temp_ffd_box.pkl', 'wb') as pickle_file:
+#    pickle.dump(ffd_box, pickle_file)
+#with open('studies/Goswift/results/temp_x_loc.pkl', 'wb') as pickle_file:
+#    pickle.dump(x_loc, pickle_file)
+#with open('studies/Goswift/results/temp_nearfield.pkl', 'wb') as pickle_file:
+#    pickle.dump(nearfield_sig, pickle_file)
+#with open('studies/Goswift/results/temp_ground.pkl', 'wb') as pickle_file:
+#    pickle.dump(ground_sig, pickle_file)
+#with open('studies/Goswift/results/temp_loudness.pkl', 'wb') as pickle_file:
+#    pickle.dump(loudness, pickle_file)
 
 print()
 print("------------------------------------------")

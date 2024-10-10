@@ -284,7 +284,7 @@ def write_tecplot_delta_z_file(new_filename, deformed_mesh_points, delta_mesh_po
 
 if __name__ == "__main__":
     #location of undeformed geometry .tri file
-    file = "studies/GoSwift/meshes/test_sw.tri"
+    file = "studies/GoSwift/meshes/test.tri"
 
     #Define ffd box parameters
     #[(12, 32.67716, 32.67716), (25, -16.338579177856445, -48.983498), (3, 3, 3), -1.25, (1, 1, 1)]
@@ -294,20 +294,20 @@ if __name__ == "__main__":
     #[(5, 2.722535, 2.722535), (8.638409614562988, 0, -1.361479), (3, 3, 3), 0.5, (1, 1, 1)]
 
     origin:  (5941.16668, 0, 1250.0356)
-    length = 154
+    length = 202.0
     #width:  32.66058
-    width = 85.58562
+    width = 86.42333
     #[(2, 1.5, 1), (21.2, 10.7223, -4.5), (3, 3, 3), -1.5, (1, 1, 1)]
-    ffd_lengths =       (13,8,5)
+    ffd_lengths =       (13,6,7)
      ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
     #ffd_origin =        (24, 11.4723-ffd_lengths[1]/2, -4.5) ## pod aand wedge
     ffd_origin =        ((length-length/2)-ffd_lengths[0]/2, -ffd_lengths[1]/2, -ffd_lengths[2]) ## pod aand wedge
     #ffd_origin =        (9.36841, 2.722535/2-ffd_lengths[1]/2, -1) ## pod aand wedge 2-2.722535/2
     ffd_num_points =    (3,3,3) ## I keep this constant
-    ffd_delta_z =       (-5)    #0-3
+    ffd_delta_z =       (-2)    #0-3
     ffd_delta_index =   (1,1,1)  #Any other vector 
 
-
+    print("origin: ", ffd_origin)
     vert_coords, tri_verts, comp_num = load_tri_mesh_points(file)
     deformed_mesh_points = deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index, vert_coords,0,True)
     write_tri_file("studies/GoSwift/meshes/test_deformed.tri",deformed_mesh_points,tri_verts,comp_num)

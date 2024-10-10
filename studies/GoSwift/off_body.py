@@ -6,6 +6,7 @@ import subprocess as sp
 import sys
 import numpy as np
 import json
+import pickle
 import matplotlib.pyplot as plt
 from rapidboom.sboomwrapper import SboomWrapper
 import pyldb
@@ -21,12 +22,12 @@ def set_json(input_file, freestream_velocity, gamma, mach, formulation,solver):
         },
         "geometry": {
             "file": "studies/GoSwift/meshes/test_deformed.tri",
-            "mirror_about" : "xz",
-            "spanwise_axis": "-y",
+            #"mirror_about" : "xz",
+            #"spanwise_axis": "+y",
             "wake_model": {
                 "wake_present": False,
                 "append_wake": False,
-                "trefftz_distance": 20.0
+                "trefftz_distance": 200.0
             }
         },
         "solver": {
@@ -44,7 +45,8 @@ def set_json(input_file, freestream_velocity, gamma, mach, formulation,solver):
         "output": {
             "verbose": True,
             "body_file": "studies/GoSwift/results/test.vtk",
-            "mirrored_body_file" : "studies/GoSwift/results/test_mirrored.vtk",
+            #"mirrored_body_file" : "studies/GoSwift/results/test_mirrored.vtk",
+            #"wake_file": "studies/GoSwift/results/test_wake.vtk",
             "report_file": "studies/Goswift/results/test.json",
             "offbody_points": {
                 "points_file": "studies/Goswift/off_body/off_body_sheet.csv",
@@ -76,7 +78,7 @@ def find_mins(obj):
         if x == minx:
             #y_pos = y
             z_pos = z
-            y_pos = (abs(maxy) - abs(miny))/2
+            y_pos = 0 #(abs(maxy) - abs(miny))/2
             #z_pos = (maxz + minz)/2
     #print("length", maxx - minx)
     width_body = maxy - miny
@@ -177,7 +179,7 @@ def off_body_sheet(N_points, M_number, body_lengths, num_azimuth):
             offset = R / np.tan(mu) ###!!!!!!!
             x0 = x_start #+ 3.74 ########!!!!!!!!!!! Change back^^^ for just pod_ensure
 
-            Lu = L + (L/2) + offset
+            Lu = L + (L) + offset ### was L/2
             ds = Lu / N_points   #####^^^^ pod_ensure
 
             #print("x0 (trig)", x0)
@@ -263,7 +265,7 @@ def pressures(gamma, p_static, density, speed_of_sound, v_inf, Mach, angles): ##
     for i in range(len(angles)):  ## - 1
         for j in range(len(points)):  ## - 1 ## points >> angles
         #xg.append((points[i][0] - x0)/L)  #!
-            xg.append((points[j][0]))##-x0)) #*12 !!!!!!!!! add back in
+            xg.append((points[j][0]))#-x0)/L) !!!!!!!!! comment for reference -x0/L
     #print("x: ", xg)
 
     ## Calculate pressures from velocities
@@ -332,11 +334,6 @@ def boom(MACH, r_over_l, ref_length, altitude, num_points, angles):
         g_sig.append(g_sig_single)
         noise_level.append(noise_level_single)
 
-    #plt.plot(g_sig[:, 0],g_sig[:, 1])
-    #plt.title("Ground Signature")
-    #plt.show()
-    #print('PLdB (pressure): ', noise_level)
-
     return g_sig, noise_level
 
 
@@ -353,7 +350,6 @@ def stl_to_tri(stl_filename, tri_filename):
 
     _write_TRI(n_verts, n_tris, vertices, tri_verts, comp_num, tri_filename)
     print(f"Conversion complete. Output written to {tri_filename}")
-
 
 
 def _write_TRI(n_verts, n_tris, vertices, tri_verts, comp_num, tri_filename):
@@ -376,6 +372,34 @@ def _write_TRI(n_verts, n_tris, vertices, tri_verts, comp_num, tri_filename):
             print("{0:<4d}".format(int(comp)), file=export_handle)
 
 
+def clear_pickle_file(filename):
+    # Open in 'wb' mode to overwrite the file with nothing
+    with open(filename, 'wb') as pickle_file:
+        pass  # Do nothing, just clear the file
+
+
+def append_to_pickle(filename, data):
+    # Check if the file exists and is not empty
+    if os.path.exists(filename) and os.path.getsize(filename) > 0:
+        try:
+            with open(filename, 'rb') as pickle_file:
+                existing_data = pickle.load(pickle_file)
+        except EOFError:
+            # File is empty, proceed with an empty list
+            existing_data = []
+    else:
+        # File does not exist or is empty, proceed with an empty list
+        existing_data = []
+
+    # Append the new data
+    existing_data.append(data)
+    
+    # Write the updated data back to the pickle file
+    with open(filename, 'wb') as pickle_file:
+        pickle.dump(existing_data, pickle_file)
+        pickle_file.flush()  # Flush the data to disk
+        os.fsync(pickle_file.fileno())  # Ensure the OS writes the file to disk
+
 '''___ Test Run Script / Check ___'''
 
 if __name__ == "__main__":
@@ -384,7 +408,7 @@ if __name__ == "__main__":
     baseline_stl = "studies/GoSwift/meshes/test_sw.stl"
 
     input_file = "studies/GoSwift/input_files/test.json"
-    mach = 1.6
+    mach = 1.8
     #input = json.loads(open(input_file).read())
     #Mach = input["flow"]["freestream_mach_number"]
     set_json(input_file, [1548.928,0,0], 1.4, mach)
