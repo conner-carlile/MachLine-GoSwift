@@ -400,6 +400,39 @@ def append_to_pickle(filename, data):
         pickle_file.flush()  # Flush the data to disk
         os.fsync(pickle_file.fileno())  # Ensure the OS writes the file to disk
 
+
+def heatmap(ffd_box, loudness2):
+    # Extract x_location, bump_height, and loudness_2 from ffd_box
+    x_locations = [item[1][0] for item in ffd_box]
+    bump_heights = [item[3] for item in ffd_box]
+
+
+    # Reshape data for heatmap grid
+    x_unique = list(set(x_locations))
+    y_unique = list(set(bump_heights))
+
+    # Create a 2D grid of loudness values
+    loudness_grid = np.zeros((len(y_unique), len(x_unique)))
+
+    x_locations = np.array(x_locations)
+    bump_heights = np.array(bump_heights)
+    loudness2 = np.array(loudness2)
+
+    for i, y in enumerate(y_unique):
+        for j, x in enumerate(x_unique):
+            mask = (bump_heights == y) & (x_locations == x)
+            loudness_grid[i, j] = loudness2[mask]
+
+    # Plot heatmap
+    #plt.figure(figsize=(10, 6))
+    X, Y = np.meshgrid(x_unique, y_unique)
+    plt.pcolormesh(x_unique, y_unique, loudness_grid, shading='auto', cmap='coolwarm')
+    plt.colorbar(label='Loudness')
+    plt.xlabel('X Location')
+    plt.ylabel('Bump Height')
+    plt.title('Bump Length = 6ft')
+    plt.show()
+
 '''___ Test Run Script / Check ___'''
 
 if __name__ == "__main__":
