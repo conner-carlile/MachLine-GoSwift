@@ -26,12 +26,14 @@ formulation = "dirichlet-morino" #"neumann-mass-flux" #
 mirror = False ## add to json write function
 wake = False ## add to json write function
 
-## Half
-#ffd_lengths0 =     (13,6,7)#(7, 5, 7)
-#ffd_origin0 =      (94.5, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
+
+## Undeformed N+2
+#ffd_lengths0 =     (6,6,7)#(7, 5, 7)
+#ffd_origin0 =      (50, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
 #ffd_num_points =   (3,3,3)
-#ffd_delta_z0 =     (-.75) #(-1.7)
+#ffd_delta_z0 =     (0) #(-1.7)
 #ffd_delta_index =  (1,1,1)
+#lengths, origins, bumps = (1,1,1)
 
 ## N+2 Zone 1
 ffd_lengths0 =     (6,6,7)#(7, 5, 7)
@@ -40,6 +42,22 @@ ffd_num_points =   (3,3,3)
 ffd_delta_z0 =     (-.25) #(-1.7)
 ffd_delta_index =  (1,1,1)
 lengths, origins, bumps = (1,21,3)
+
+## N+2 Zone 2
+#ffd_lengths0 =     (6,6,7)#(7, 5, 7)
+#ffd_origin0 =      (77, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
+#ffd_num_points =   (3,3,3)
+#ffd_delta_z0 =     (-.25) #(-1.7)
+#ffd_delta_index =  (1,1,1)
+#lengths, origins, bumps = (1,31,3)
+
+## N+2 Zone 3
+#ffd_lengths0 =     (6,6,7)#(7, 5, 7)
+#ffd_origin0 =      (158, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
+#ffd_num_points =   (3,3,3)
+#ffd_delta_z0 =     (-.25) #(-1.7)
+#ffd_delta_index =  (1,1,1)
+#lengths, origins, bumps = (1,17,3)
 
 
 ## Atmospheric Parameters
@@ -129,7 +147,6 @@ delta_index = []
 #ffd_delta_z0 =     (-0.5)
 #ffd_delta_index =  (1,1,1)
 
-
 ##ffd_lengths0 =     (3, 2.5, 1) ## pod and wedge
 ##ffd_origin0 =      (24, 11.4723-ffd_lengths0[1]/2, -4.5) ## pod and wedge
 #ffd_lengths0 =     (1, 1, 1)
@@ -148,20 +165,12 @@ print("width: ", maxy-miny)
 #lengths, origins, bumps = (4, int(length_body - ffd_lengths0[0]), 4) ## moves along entire mesh keeping entire ffd box on mesh (not really true)
 "'####### Find a way to not check Zero deformation except for the first time #######'"
 
-## Clear pickle files before running test cases
-##clear_pickle_file('studies/Goswift/results/temp_ffd_box.pkl')
-#clear_pickle_file('studies/Goswift/results/temp_x_loc.pkl')
-#clear_pickle_file('studies/Goswift/results/temp_nearfield.pkl')
-#clear_pickle_file('studies/Goswift/results/temp_ground.pkl')
-#clear_pickle_file('studies/Goswift/results/temp_loudness.pkl')
-
 ## Test Case Loops
 iteration = 0
 skips = 0
 for i in range(lengths):
     ffd_lengths = (ffd_lengths0[0] + (0), ffd_lengths0[1], ffd_lengths0[2]) #(i+2)
     for j in range(origins):
-        #ffd_origin = (ffd_origin0[0] + (j), ffd_origin0[1]- (ffd_lengths[1]/2), ffd_origin0[2]- (ffd_lengths[2]))
         ffd_origin = (ffd_origin0[0] + (j*1), ffd_origin0[1], ffd_origin0[2]) #(j)
         for k in range(bumps):
             ffd_delta_z = (ffd_delta_z0 - (k*.25)) #####!!!!!!!!  was 0.5, 3.5
@@ -209,12 +218,6 @@ for i in range(lengths):
             print()
             print("Writing Test Case Data to Files....")
         
-            # Append the data to each pickle file after each iteration
-            #append_to_pickle('studies/Goswift/results/temp_ffd_box.pkl', list(ffd_box))
-            #append_to_pickle('studies/Goswift/results/temp_x_loc.pkl', list(xg))
-            #append_to_pickle('studies/Goswift/results/temp_nearfield.pkl', list(p))
-            #append_to_pickle('studies/Goswift/results/temp_ground.pkl', list(g_sig))
-            #append_to_pickle('studies/Goswift/results/temp_loudness.pkl', list(noise_level))
 
             #### write all data to seperate pickle files for later data handling
             with open('studies/Goswift/results/temp_ffd_box.pkl', 'wb') as pickle_file:

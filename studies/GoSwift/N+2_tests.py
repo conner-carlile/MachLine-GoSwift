@@ -1,4 +1,3 @@
-import pickle
 import csv
 import numpy as np
 from off_body import *
@@ -9,7 +8,19 @@ from exponentalSmoothing import exponential_smoothing
 import tabulate
 import ast
 
-## Open pickle files
+## Parameters
+L = 202.0
+body_lengths = 3
+altitude = 40000
+M_number = 1.8
+R = L * body_lengths 
+mu = np.arcsin(1/M_number)
+x0 = R/np.tan(mu) 
+baseline_PLDB = 94.027271343253
+sboom_run = False
+case_name = "zone1"
+
+## Open temp pickle files for current open case
 with open('studies/Goswift/results/temp_ffd_box.pkl', 'rb') as pickle_file:
     ffd_box = pickle.load(pickle_file)
 
@@ -30,20 +41,8 @@ def reduce_peaks(data, scale_factor):
     return np.sign(data) * (np.abs(data) ** scale_factor)
 
 
-## Parameters
-L = 202.0
-body_lengths = 3
-altitude = 40000
-M_number = 1.8
-R = L * body_lengths 
-mu = np.arcsin(1/M_number)
-x0 = R/np.tan(mu) 
-baseline_PLDB = 94.027271343253
-sboom_run = False
-case_name = "zone1"
 
-
-
+print(nearfield_sig)
 ## Shift and scale x-axis
 x_norm = []
 for i in range(len(x_loc[0])):

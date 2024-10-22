@@ -4,7 +4,7 @@ from scipy import optimize
 from scipy import interpolate
 from deform_tri_module import *
 import shutil
-from scrape_FIU_deformation import scrape_deformation_data
+#from scrape_FIU_deformation import scrape_deformation_data
 import time
 
 class FFD_deform_opt:

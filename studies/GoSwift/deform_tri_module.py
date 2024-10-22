@@ -295,21 +295,30 @@ if __name__ == "__main__":
 
     origin:  (5941.16668, 0, 1250.0356)
     length = 202.0
-    #width:  32.66058
     width = 86.42333
-    #[(2, 1.5, 1), (21.2, 10.7223, -4.5), (3, 3, 3), -1.5, (1, 1, 1)]
-    ffd_lengths =       (13,6,7)
-     ## need to shift x and y origin points by half of their length value (origin is corner of box not center)(-2 z to shift box down to place bump on bottom)
-    #ffd_origin =        (24, 11.4723-ffd_lengths[1]/2, -4.5) ## pod aand wedge
-    ffd_origin =        ((length-length/2)-ffd_lengths[0]/2, -ffd_lengths[1]/2, -ffd_lengths[2]) ## pod aand wedge
-    #ffd_origin =        (9.36841, 2.722535/2-ffd_lengths[1]/2, -1) ## pod aand wedge 2-2.722535/2
-    ffd_num_points =    (3,3,3) ## I keep this constant
-    ffd_delta_z =       (-2)    #0-3
-    ffd_delta_index =   (1,1,1)  #Any other vector 
+    ffd_lengths1 =       (6.45558206,4,7)
+    ffd_origin1 =        (65.0357, -ffd_lengths1[1]/2, -ffd_lengths1[2]) ## pod aand wedge
+    ffd_num_points1 =    (3,3,3) ## I keep this constant
+    ffd_delta_z1 =       (-0.327772096)    #0-3
+    ffd_delta_index1 =   (1,1,1)  #Any other vector 
 
-    print("origin: ", ffd_origin)
+    ffd_lengths2 =       (7.185426713,4,7)
+    ffd_origin2 =        (106.870288, -ffd_lengths2[1]/2, -ffd_lengths2[2]) ## pod aand wedge
+    ffd_num_points2 =    (3,3,3) ## I keep this constant
+    ffd_delta_z2 =       (-0.162016413)    #0-3
+    ffd_delta_index2 =   (1,1,1)  #Any other vector 
+
+    ffd_lengths3 =       (12.30289,4,7)
+    ffd_origin3 =        (160.0584, -ffd_lengths3[1]/2, -ffd_lengths3[2]) ## pod aand wedge
+    ffd_num_points3 =    (3,3,3) ## I keep this constant
+    ffd_delta_z3 =       (0.5896429478)    #0-3
+    ffd_delta_index3 =   (1,1,1)  #Any other vector 
+
+    
     vert_coords, tri_verts, comp_num = load_tri_mesh_points(file)
-    deformed_mesh_points = deform_mesh_points(ffd_lengths, ffd_origin, ffd_num_points, ffd_delta_z, ffd_delta_index, vert_coords,0,True)
+    deformed_mesh_points = deform_mesh_points(ffd_lengths1, ffd_origin1, ffd_num_points1, ffd_delta_z1, ffd_delta_index1, vert_coords,0,True)
+    deformed_mesh_points = deform_mesh_points(ffd_lengths2, ffd_origin2, ffd_num_points2, ffd_delta_z2, ffd_delta_index2, deformed_mesh_points,1,True)
+    deformed_mesh_points = deform_mesh_points(ffd_lengths3, ffd_origin3, ffd_num_points3, ffd_delta_z3, ffd_delta_index3, deformed_mesh_points,2,True)
     write_tri_file("studies/GoSwift/meshes/test_deformed.tri",deformed_mesh_points,tri_verts,comp_num)
 
     ## The following is only to plot the original and deformed geometries and does not effect results
@@ -334,13 +343,13 @@ if __name__ == "__main__":
     ax.set_zlabel("Z")
     ax.set_aspect("equal")
     ## plot ffd box corners
-    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
-    ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2], color = "red", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
+    #ax.scatter(ffd_origin[0]+ffd_lengths[0],ffd_origin[1]+ffd_lengths[1],ffd_origin[2]+ffd_lengths[2], color = "blue", s = 20)
     #plt.show()
            
