@@ -1,12 +1,12 @@
 {
     "flow": {
         "freestream_velocity": [
-            1740.1483491290276,
+            1548.9212753348834,
             0.0,
-            91.19731060090261
+            0.0
         ],
         "gamma": 1.4,
-        "freestream_mach_number": 1.8
+        "freestream_mach_number": 1.6
     },
     "geometry": {
         "file": "studies/GoSwift/meshes/test_deformed.tri",

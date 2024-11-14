@@ -11,14 +11,14 @@ import ast
 ## Parameters
 L = 202.0
 body_lengths = 3
-altitude = 40000
-M_number = 1.8
+altitude = 49000
+M_number = 1.77
 R = L * body_lengths 
 mu = np.arcsin(1/M_number)
 x0 = R/np.tan(mu) 
 baseline_PLDB = 94.027271343253
-sboom_run = False
-case_name = "zone1"
+sboom_run = True
+case_name = "Multi_bump_1_49k"
 
 ## Open temp pickle files for current open case
 with open('studies/Goswift/results/temp_ffd_box.pkl', 'rb') as pickle_file:
@@ -42,37 +42,58 @@ def reduce_peaks(data, scale_factor):
 
 
 
-print(nearfield_sig)
+#print(nearfield_sig)
 ## Shift and scale x-axis
 x_norm = []
 for i in range(len(x_loc[0])):
-    x_norm.append((x_loc[0][i] - x0)*12-1000) # convert to in., shift by 1000 in.
+    x_norm.append((x_loc[0][i] - x0)*12)#-1000) # convert to in., shift by 1000 in.
 
 
 ## split and smooth all case signatures 
 sig = []
 for i in range(len(nearfield_sig)):
-    nearfield_sig[i] = exponential_smoothing(nearfield_sig[i], 0.2)
-    nearfield_sig[i] = savgol_filter(nearfield_sig[i], 5, 3)    
+   nearfield_sig[i] = exponential_smoothing(nearfield_sig[i], 0.2)
+   nearfield_sig[i] = savgol_filter(nearfield_sig[i], 5, 3)  
+   #nearfield_sig[i] = exponential_smoothing(nearfield_sig[i], 0.1)
+   #nearfield_sig[i] = savgol_filter(nearfield_sig[i], 5, 4)  
 
-    front_sig = nearfield_sig[i][:1348]
-    front_x = x_norm[:1348]
+   front_sig = nearfield_sig[i][:1350]  ## 1348**
+   front_x = x_norm[:1350]              ## 1348
 
-    aft_sig = nearfield_sig[i][1348:]
-    aft_x = x_norm[1348:]
+   aft_sig = nearfield_sig[i][1350:]    ## 1348
+   aft_x = x_norm[1350:]                ## 1348
 
-    aft_smoothed = reduce_peaks(aft_sig, 2) #1.5
-    smoothed = np.concatenate((front_sig,aft_smoothed))
+   aft_smoothed = reduce_peaks(aft_sig, 2) #1.5
+   smoothed = np.concatenate((front_sig,aft_smoothed))
 
-    # split again
-    front_sig = smoothed[:1365]
-    front_x = x_norm[:1365]
-    aft_sig = smoothed[1365:]
-    aft_x = x_norm[1365:]
+   # split again
+   front_sig = smoothed[:1360]  ## 1365
+   front_x = x_norm[:1360]      ## 1365
+   aft_sig = smoothed[1360:]    ## 1365
+   aft_x = x_norm[1360:]        ## 1365
 
-    aft_smoothed = exponential_smoothing(aft_sig, 0.03)
-    smoothed = np.concatenate((front_sig,aft_smoothed))
-    sig.append(smoothed)
+   aft_smoothed = exponential_smoothing(aft_sig, 0.03)
+   smoothed = np.concatenate((front_sig,aft_smoothed))
+   sig.append(smoothed)
+
+   #front_sig = nearfield_sig[i][:825]
+   #front_x = x_norm[:825]
+
+   #aft_sig = nearfield_sig[i][825:]
+   #aft_x = x_norm[825:]
+
+   #aft_smoothed = reduce_peaks(aft_sig, 2)#3) #1.5
+   #smoothed = np.concatenate((front_sig,aft_smoothed))
+
+   ## split again
+   #front_sig = smoothed[:841]
+   #front_x = x_norm[:841]
+   #aft_sig = smoothed[841:]
+   #aft_x = x_norm[841:]
+
+   #aft_smoothed = exponential_smoothing(aft_sig, .02)
+   #smoothed = np.concatenate((front_sig,aft_smoothed))
+   #sig.append(smoothed)
 
 for i in range(len(sig)):
     plt.plot(x_norm, sig[i])
@@ -80,8 +101,8 @@ for i in range(len(sig)):
     plt.xlabel("X (in)")
     plt.ylabel("dp / P")
     plt.grid(True, linestyle=':')
-    plt.xlim(0,4000)
-    plt.ylim(-.02,.02)
+    #plt.xlim(0,4000)
+    #plt.ylim(-.02,.02)
 plt.show()
 
 ## Function to read in old data
@@ -151,6 +172,7 @@ def boom(M_number, r_over_l, ref_length, altitude, baseline_PLDB,sig,sboom_run, 
         
     return g_sig, loudness2, delta_PLDB
 
+#print(ffd_box[14])
 ## Run sBoom on new data or read in old data
 if sboom_run == True:
     g_sig, loudness2, delta_PLDB = boom(M_number, body_lengths, L, altitude,baseline_PLDB,sig,sboom_run, case_name)
@@ -175,10 +197,13 @@ plt.show()
 
 
 ## Find quietest configuration multiple azimuth
+print("min_loudness: ", min(loudness))
+print("min_smoothed: ", min(loudness2))
+
 min = min(loudness2)
 for i in range(len(loudness2)):
     if loudness2[i] == min:
-        print("The iteration with the lowest Loudness is: ", i)
+        print("The iteration with the lowest new Loudness is: ", i)
         print("The lowest loudness is: ", min)
         break
 

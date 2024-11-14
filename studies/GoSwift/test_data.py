@@ -58,8 +58,8 @@ for i in range (len(nearfield_sig)):
 
 #nearfield_sig[0] = savgol_filter(nearfield_sig[0], 100,2)
 ###### Working #######
-nearfield_sig[0] = exponential_smoothing(nearfield_sig[0], 0.2)
-nearfield_sig[0] = savgol_filter(nearfield_sig[0], 5, 3)
+#nearfield_sig[0] = exponential_smoothing(nearfield_sig[0], 0.2)
+#nearfield_sig[0] = savgol_filter(nearfield_sig[0], 5, 3)
 #########################
 #nearfield_sig[0] = exponential_smoothing(nearfield_sig[0], 0.4)
 #nearfield_sig[0] = savgol_filter(nearfield_sig[0], 15, 3)
@@ -84,8 +84,8 @@ plt.title("Near-Field R/L = 3")
 plt.ylabel("dp / P")
 plt.xlabel("X (in)")
 plt.grid(True, linestyle=':')
-plt.xlim(0,4000)
-plt.ylim(-.02,.02)
+#plt.xlim(0,4000)
+#plt.ylim(-.02,.02)
 #ax[0].set_ylim(-0.1,0.15, 0.5)
 plt.show()
 

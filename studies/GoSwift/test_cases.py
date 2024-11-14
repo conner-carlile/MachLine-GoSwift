@@ -15,12 +15,12 @@ start_time = time.time()
 input_file = "studies/GoSwift/input_files/test.json"
 
 altitude = 40000 #ft
-Mach = 1.8
+Mach = 1.77
 r_over_l = 3 ##0.1 for pod and wedge test ## 3 body lengths for wedge  #1.5 ## 1 F-15 body length for wedge     #2.94 #2.3185 
 N_points = 1500 # @ 1 F-15 body length
 gamma = 1.4
 num_azimuth = 0
-angle_of_attack = 3 # degrees
+angle_of_attack = 3.44 # degrees
 solver = "GMRES" #"BSOR"
 formulation = "dirichlet-morino" #"neumann-mass-flux" #
 mirror = False ## add to json write function
@@ -28,36 +28,36 @@ wake = False ## add to json write function
 
 
 ## Undeformed N+2
+ffd_lengths0 =     (6,6,7)#(7, 5, 7)
+ffd_origin0 =      (0,0,0)#(50, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
+ffd_num_points =   (3,3,3)
+ffd_delta_z0 =     (0) #(-1.7)
+ffd_delta_index =  (1,1,1)
+lengths, origins, bumps = (1,1,1)
+
+## N+2 Zone 1
 #ffd_lengths0 =     (6,6,7)#(7, 5, 7)
 #ffd_origin0 =      (50, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
 #ffd_num_points =   (3,3,3)
-#ffd_delta_z0 =     (0) #(-1.7)
+#ffd_delta_z0 =     (-.25) #(-1.7)
 #ffd_delta_index =  (1,1,1)
-#lengths, origins, bumps = (1,1,1)
+#lengths, origins, bumps = (1,21,3)
 
-## N+2 Zone 1
-ffd_lengths0 =     (6,6,7)#(7, 5, 7)
-ffd_origin0 =      (50, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
-ffd_num_points =   (3,3,3)
-ffd_delta_z0 =     (-.25) #(-1.7)
-ffd_delta_index =  (1,1,1)
-lengths, origins, bumps = (1,21,3)
-
-## N+2 Zone 2
+### N+2 Zone 2
 #ffd_lengths0 =     (6,6,7)#(7, 5, 7)
 #ffd_origin0 =      (77, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
 #ffd_num_points =   (3,3,3)
 #ffd_delta_z0 =     (-.25) #(-1.7)
 #ffd_delta_index =  (1,1,1)
-#lengths, origins, bumps = (1,31,3)
+#lengths, origins, bumps = (1,25,3)
 
-## N+2 Zone 3
+### N+2 Zone 3
 #ffd_lengths0 =     (6,6,7)#(7, 5, 7)
 #ffd_origin0 =      (158, -3.0, -7)#(97.435035, -2.5, -7)#(0,0,0)#
 #ffd_num_points =   (3,3,3)
 #ffd_delta_z0 =     (-.25) #(-1.7)
 #ffd_delta_index =  (1,1,1)
-#lengths, origins, bumps = (1,17,3)
+#lengths, origins, bumps = (1,11,3)
 
 
 ## Atmospheric Parameters
